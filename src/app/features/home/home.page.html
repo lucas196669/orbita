@@ -1,0 +1,26 @@
+<section class="page stack">
+  <header class="page__header stack">
+    <p class="page__eyebrow">Inicio · {{ vm.roleLabel() }}</p>
+    <h1>Hola, {{ vm.displayName() }}</h1>
+    <p class="page__lede">{{ vm.greeting() }}</p>
+  </header>
+
+  <section class="bento" aria-label="Resumen de tu espacio de trabajo">
+    @for (highlight of vm.highlights(); track highlight.title) {
+    <article class="card stack">
+      <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
+      <h2 class="page__card-title">{{ highlight.title }}</h2>
+      <p class="page__lede">{{ highlight.description }}</p>
+    </article>
+    }
+  </section>
+
+  <section class="card stack" aria-labelledby="home-next">
+    <p class="page__eyebrow">Próximamente</p>
+    <h2 id="home-next" class="page__card-title">Módulos conectados a datos reales</h2>
+    <p class="page__lede">
+      Estamos preparando la integración con Supabase para que los indicadores y las tablas muestren información en vivo.
+    </p>
+    <div class="skeleton skeleton--block" aria-hidden="true"></div>
+  </section>
+</section>

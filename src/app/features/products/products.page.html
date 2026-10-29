@@ -1,0 +1,26 @@
+<section class="page stack">
+  <header class="page__header stack">
+    <p class="page__eyebrow">Relacional · Todo el equipo</p>
+    <h1>{{ vm.title() }}</h1>
+    <p class="page__lede">{{ vm.description() }}</p>
+  </header>
+
+  <section class="bento" aria-label="Secciones de productos en preparación">
+    @for (card of vm.cards(); track card.title) {
+    <article class="card stack" aria-busy="true">
+      <p class="page__eyebrow">{{ card.title }}</p>
+      <span class="skeleton skeleton--title" aria-hidden="true"></span>
+      <span class="skeleton skeleton--line" aria-hidden="true"></span>
+      <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
+      <p class="page__lede">{{ card.description }}</p>
+    </article>
+    }
+  </section>
+
+  <section class="card stack" aria-labelledby="products-status">
+    <p class="page__eyebrow">Fase 1</p>
+    <h2 id="products-status" class="page__card-title">Módulo en preparación</h2>
+    <p class="page__lede">La tabla de productos se conectará a Supabase y respetará los permisos de cada rol.</p>
+    <div class="skeleton skeleton--block" aria-hidden="true"></div>
+  </section>
+</section>
