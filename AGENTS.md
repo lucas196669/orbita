@@ -74,6 +74,33 @@ src/app/
 - `core/services` se provee en raíz; los datos de Supabase y Firestore se
   encapsulan en servicios separados.
 
+## Rutas y control de acceso (Fase 1)
+
+Todas las páginas se cargan con `loadComponent` (lazy loading) y
+`withComponentInputBinding()` / `withPreloading(PreloadAllModules)`.
+
+| Ruta | Página | Acceso |
+| --- | --- | --- |
+| `/login` | `features/auth/login` | Solo invitados (`guestGuard`) |
+| `/app` | `layout/shell` | Autenticado (`authGuard`) |
+| `/app/inicio` | `features/home` | Autenticado |
+| `/app/dashboard` | `features/dashboard` | Solo `admin` (`roleGuard`) |
+| `/app/productos` | `features/products` | Autenticado |
+| `/app/pedidos` | `features/orders` | Autenticado |
+| `/app/ayuda` | `features/help` | Autenticado |
+| `/acceso-denegado` | `features/errors` (403) | Pública |
+| `''` | Redirección a `/app/inicio` | — |
+| `**` | `features/errors` (404) | Pública |
+
+- `authGuard`: sin sesión redirige a `/login` con `returnUrl`.
+- `roleGuard`: lee `route.data['roles']` y redirige a `/acceso-denegado` si el
+  rol no está permitido.
+- `guestGuard`: con sesión activa redirige a `/app/inicio`.
+- `AuthService` se inicializa con `provideAppInitializer` y lee el rol siempre
+  de la tabla `profiles`; nunca de `localStorage` ni del cliente.
+- `authInterceptor` añade `Authorization: Bearer <access_token>` a las
+  peticiones de Supabase y, ante un `401`, cierra sesión y vuelve a `/login`.
+
 ## Sistema de diseño
 
 Fuente de verdad: `src/theme/tokens.scss`. Documentación y ratios de contraste:
