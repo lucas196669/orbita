@@ -1,21 +1,40 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> Blank </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>
-      Start with Ionic
-      <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a>
-    </p>
-  </div>
+  <main id="contenido-principal" class="shell stack">
+    <header class="hero stack">
+      <p class="eyebrow">Panel de gestión empresarial</p>
+      <h1>Claridad operativa,<br />sin ruido.</h1>
+      <p class="lede">
+        Orbita reúne productos, pedidos y actividad en un único espacio de trabajo. Esta es la base visual del proyecto:
+        tokens, tipografía y componentes preparados para las siguientes fases.
+      </p>
+      <div class="cluster">
+        <span class="pill">Fase 0 · Base</span>
+        <span class="pill pill--accent">Diseño listo</span>
+      </div>
+    </header>
+
+    <section class="bento" aria-labelledby="modulos-titulo">
+      <h2 id="modulos-titulo" class="sr-only">Módulos del panel</h2>
+
+      <article class="card stack">
+        <p class="card__meta">Relacional</p>
+        <h3>Productos y pedidos</h3>
+        <p>Datos estructurados en Supabase, con roles de administración y consulta.</p>
+      </article>
+
+      <article class="card stack">
+        <p class="card__meta">Documental</p>
+        <h3>Actividad</h3>
+        <p>Eventos y trazas en Firestore para entender qué ocurre en el panel.</p>
+      </article>
+
+      <article class="card stack">
+        <p class="card__meta">Análisis</p>
+        <h3>Dashboard y exportación</h3>
+        <p>Gráficas con Chart.js y salida a PDF o CSV para compartir resultados.</p>
+      </article>
+    </section>
+  </main>
 </ion-content>
