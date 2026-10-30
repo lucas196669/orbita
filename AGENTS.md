@@ -124,7 +124,32 @@ Todas las páginas se cargan con `loadComponent` (lazy loading) y
   con `options.data.full_name`; el rol siempre lo asigna el servidor.
 - `shared/components/toast` (`app-toast`) anuncia mensajes con
   `role="status"` y `aria-live="polite"`.
->>>>>>> feature/fase2-formularios
+
+## Datos, dashboard y exportación
+
+- **Supabase** es la fuente relacional: `ProductsService` y `OrdersService`
+  encapsulan las consultas y mutaciones; la vista nunca habla con el cliente de
+  Supabase directamente.
+- **Firestore** es la fuente documental: `FirestoreActivityService` expone
+  `activity$()` en tiempo real, `log()` para registrar acciones y
+  `seedDemoData()` para generar actividad de demostración. Si Firebase no está
+  configurado, devuelve un flujo vacío y los errores de escritura se tratan como
+  avisos no bloqueantes.
+- `DashboardStore` es el viewmodel del dashboard: carga productos y pedidos en
+  paralelo con estados de carga/error independientes, mantiene filtros de rango
+  y categoría con signals y deriva métricas, series diarias, agregados y feed
+  con `computed()`.
+- Los gráficos usan Chart.js mediante `provideCharts()` en el propio componente
+  del dashboard, para que la librería no entre en el bundle inicial. La paleta
+  se lee de los tokens CSS con `readChartPalette()` y se actualiza al cambiar de
+  tema.
+- `shared/services/export.service.ts` centraliza la exportación. CSV usa BOM
+  UTF-8, separador `;`, coma decimal y neutraliza fórmulas; PDF usa `jsPDF` +
+  `jspdf-autotable` con carga dinámica, cabecera, filtros, paginación y pie. Se
+  reutiliza en dashboard, productos y pedidos.
+- La actividad registrada cubre inicio de sesión y altas, actualizaciones y
+  bajas de producto. Todavía no existe un flujo de alta de pedidos, por lo que
+  la acción `Pedido registrado` queda pendiente de conectar cuando se añada.
 
 ## Sistema de diseño
 
