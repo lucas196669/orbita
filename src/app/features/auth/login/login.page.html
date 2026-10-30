@@ -1,12 +1,12 @@
-<ion-content [fullscreen]="true">
+<div class="login-root">
   <button type="button" class="skip-link" (click)="focusForm()">Saltar al formulario</button>
 
-  <main class="page-shell">
-    <section class="auth-card card stack" aria-labelledby="login-titulo">
-      <header class="auth-header stack">
+  <main class="login-main">
+    <section class="login-card" aria-labelledby="login-titulo">
+      <header class="login-header">
         <p class="eyebrow">Orbita · Acceso</p>
         <h1 id="login-titulo">Inicia sesión</h1>
-        <p>Accede al panel para consultar y gestionar la operación.</p>
+        <p class="login-intro">Accede al panel para consultar y gestionar la operación.</p>
       </header>
 
       @if (registeredMessage()) {
@@ -21,7 +21,7 @@
       <p class="form-summary" role="alert">{{ serverError() }}</p>
       }
 
-      <form id="login-formulario" [formGroup]="form" (ngSubmit)="submit()" novalidate class="stack">
+      <form id="login-formulario" class="login-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <app-form-field
           #emailField
           inputId="login-email"
@@ -70,4 +70,4 @@
       </form>
     </section>
   </main>
-</ion-content>
+</div>

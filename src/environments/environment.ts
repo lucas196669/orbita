@@ -1,13 +1,7 @@
-/**
- * Configuración de desarrollo.
- *
- * Las credenciales reales nunca deben versionarse: se sustituyen los valores
- * `PEGAR_AQUI` en local o se inyectan desde el proveedor de despliegue.
- */
 export const environment = {
   production: false,
-  supabaseUrl: 'PEGAR_AQUI',
-  supabaseKey: 'PEGAR_AQUI',
+  supabaseUrl: 'https://uscyvqmdekernuioeraq.supabase.co',
+  supabaseKey: 'sb_publishable_surUpW7t3mt-4YdPkaMuhA_X3UE9Ql_',
   firebase: {
     apiKey: 'PEGAR_AQUI',
     authDomain: '',

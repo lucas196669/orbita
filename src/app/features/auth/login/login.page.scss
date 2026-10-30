@@ -1,23 +1,68 @@
 :host {
   display: block;
+  height: 100%;
+  min-height: 100dvh;
+  overflow-y: auto;
+  background: var(--color-bg, #0b0d12);
+  color: var(--color-text, #f2f4f8);
 }
 
-ion-content {
-  --background: var(--color-bg, #0b0d12);
+.login-root {
+  min-height: 100dvh;
 }
 
-/* Layout propio del login: no depende de CSS global */
-.page-shell {
+.login-main {
   display: grid;
   place-items: center;
   min-height: 100dvh;
-  padding: max(var(--space-4, 1rem), env(safe-area-inset-top, 0px))
-    max(var(--space-4, 1rem), env(safe-area-inset-right, 0px))
-    max(var(--space-4, 1rem), env(safe-area-inset-bottom, 0px))
-    max(var(--space-4, 1rem), env(safe-area-inset-left, 0px));
+  padding: max(1rem, env(safe-area-inset-top, 0px)) max(1rem, env(safe-area-inset-right, 0px))
+    max(1rem, env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
 }
 
-/* Oculto fuera de pantalla hasta recibir foco */
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: min(100%, 36rem);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid var(--color-border, #262b36);
+  border-radius: 1.25rem;
+  background: var(--color-surface, #121620);
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.login-header h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.1;
+}
+
+.login-intro {
+  margin: 0;
+  color: var(--color-text-muted, #a7afbf);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-accent, #c8f542);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Oculto fuera de pantalla hasta recibir foco con el teclado */
 .skip-link {
   position: fixed;
   top: 0.5rem;
@@ -25,7 +70,7 @@ ion-content {
   z-index: 1000;
   padding: 0.75rem 1rem;
   border: 0;
-  border-radius: var(--radius-md, 0.5rem);
+  border-radius: 0.5rem;
   background: var(--color-accent, #c8f542);
   color: var(--color-on-accent, #0b0d12);
   font: inherit;
@@ -40,34 +85,6 @@ ion-content {
   outline-offset: 2px;
 }
 
-.auth-card {
-  width: min(100%, 40rem);
-  margin-inline: auto;
-}
-
-.auth-header {
-  gap: var(--space-2);
-}
-
-.auth-header h1 {
-  margin: 0;
-  font-size: var(--text-3xl);
-}
-
-.auth-header p:not(.eyebrow) {
-  margin: 0;
-  color: var(--color-text-muted);
-}
-
-.eyebrow {
-  margin: 0;
-  color: var(--color-accent);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-
 .form-summary--success {
-  color: var(--color-success);
+  color: var(--color-success, #4ade80);
 }

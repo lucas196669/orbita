@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonContent } from '@ionic/angular';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
@@ -15,7 +14,7 @@ import { controlErrorMessage, focusFirstInvalidControl } from '../../../shared/u
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  imports: [IonContent, RouterLink, ReactiveFormsModule, FormFieldComponent],
+  imports: [RouterLink, ReactiveFormsModule, FormFieldComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {

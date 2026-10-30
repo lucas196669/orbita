@@ -1,8 +1,7 @@
-/** Configuración de producción. Sustituir los marcadores antes de desplegar. */
 export const environment = {
   production: true,
-  supabaseUrl: 'PEGAR_AQUI',
-  supabaseKey: 'PEGAR_AQUI',
+  supabaseUrl: 'https://uscyvqmdekernuioeraq.supabase.co',
+  supabaseKey: 'sb_publishable_surUpW7t3mt-4YdPkaMuhA_X3UE9Ql_',
   firebase: {
     apiKey: 'PEGAR_AQUI',
     authDomain: '',
