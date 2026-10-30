@@ -1,4 +1,4 @@
-import { Directive, input, TemplateRef } from '@angular/core';
+import { Directive, inject, input, TemplateRef } from '@angular/core';
 
 import type { TableCellContext } from './data-table.model';
 
@@ -19,5 +19,5 @@ export class TableCellDirective {
   /** Clave de la columna que personaliza la plantilla. */
   readonly column = input.required<string>({ alias: 'appTableCell' });
 
-  constructor(readonly template: TemplateRef<TableCellContext<unknown>>) {}
+  readonly template = inject<TemplateRef<TableCellContext<unknown>>>(TemplateRef);
 }

@@ -53,11 +53,7 @@ export function formatTrendValue(value: number): string {
  * @param label Etiqueta del widget.
  * @returns Datos del SVG o `null` si no hay suficientes puntos.
  */
-export function buildSparkline(
-  values: readonly number[],
-  format: StatFormat,
-  label: string,
-): SparklineData | null {
+export function buildSparkline(values: readonly number[], format: StatFormat, label: string): SparklineData | null {
   const points = values.filter((value) => Number.isFinite(value));
 
   if (points.length < 2) {

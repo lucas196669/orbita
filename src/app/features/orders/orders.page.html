@@ -1,28 +1,39 @@
-<section class="page stack">
-  <header class="page__header stack">
-    <p class="page__eyebrow">Relacional · Todo el equipo</p>
-    <h1>{{ vm.title() }}</h1>
-    <p class="page__lede">{{ vm.description() }}</p>
-  </header>
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#pedidos-contenido">Saltar al contenido</a>
 
-  <section class="bento" aria-label="Secciones de pedidos en preparación">
-    @for (card of vm.cards(); track card.title) {
-    <article class="card stack" aria-busy="true">
-      <p class="page__eyebrow">{{ card.title }}</p>
-      <span class="skeleton skeleton--title" aria-hidden="true"></span>
-      <span class="skeleton skeleton--line" aria-hidden="true"></span>
-      <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
-      <p class="page__lede">{{ card.description }}</p>
-    </article>
+  <main id="pedidos-contenido" class="page-shell stack">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Relacional · Todo el equipo</p>
+        <h1>Pedidos</h1>
+        <p>Sigue el estado de cada pedido, su producto y el importe facturado.</p>
+      </div>
+
+      <span class="user-chip">{{ vm.displayName() }}</span>
+    </header>
+
+    @if (vm.error(); as error) {
+    <p class="empty-state" role="alert">{{ error }}</p>
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="vm.load()">Reintentar</button>
+    </div>
     }
-  </section>
 
-  <section class="card stack" aria-labelledby="orders-status">
-    <p class="page__eyebrow">Fase 1</p>
-    <h2 id="orders-status" class="page__card-title">Módulo en preparación</h2>
-    <p class="page__lede">
-      Los pedidos se cargarán desde Supabase con actualizaciones de estado y trazabilidad por usuario.
-    </p>
-    <div class="skeleton skeleton--block" aria-hidden="true"></div>
-  </section>
-</section>
+    <app-data-table
+      [data]="vm.orders()"
+      [columns]="vm.columns"
+      [loading]="vm.loading()"
+      [searchable]="true"
+      searchPlaceholder="Buscar por pedido, producto o estado…"
+      [selectable]="true"
+      caption="Pedidos registrados"
+      emptyMessage="Todavía no hay pedidos registrados."
+    >
+      <ng-template appTableCell="status" let-row>
+        <span class="status-badge" [class]="'status-badge status-badge--' + statusTone(row)">
+          {{ statusOf(row) }}
+        </span>
+      </ng-template>
+    </app-data-table>
+  </main>
+</ion-content>

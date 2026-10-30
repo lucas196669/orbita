@@ -1,64 +1,64 @@
 @if (interactive()) {
-<button type="button" [class]="rootClass()" [attr.aria-busy]="loading()" (click)="activate()">
-  <ng-container *ngTemplateOutlet="body"></ng-container>
-</button>
+  <button type="button" [class]="rootClass()" [attr.aria-busy]="loading()" (click)="activate()">
+    <ng-container *ngTemplateOutlet="body"></ng-container>
+  </button>
 } @else {
-<article [class]="rootClass()" [attr.aria-busy]="loading()">
-  <ng-container *ngTemplateOutlet="body"></ng-container>
-</article>
+  <article [class]="rootClass()" [attr.aria-busy]="loading()">
+    <ng-container *ngTemplateOutlet="body"></ng-container>
+  </article>
 }
 
 <ng-template #body>
   @if (loading()) {
-  <span class="sr-only">Cargando {{ label() }}</span>
-  <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
-  <span class="skeleton skeleton--title" aria-hidden="true"></span>
-  <span class="skeleton skeleton--line" aria-hidden="true"></span>
+    <span class="sr-only">Cargando {{ label() }}</span>
+    <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
+    <span class="skeleton skeleton--title" aria-hidden="true"></span>
+    <span class="skeleton skeleton--line" aria-hidden="true"></span>
   } @else {
-  <header class="stat-widget__header">
-    @if (icon()) {
-    <span class="stat-widget__icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" focusable="false">
-        <path [attr.d]="icon()" />
-      </svg>
-    </span>
+    <header class="stat-widget__header">
+      @if (icon()) {
+        <span class="stat-widget__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path [attr.d]="icon()" />
+          </svg>
+        </span>
+      }
+      <p class="stat-widget__label">{{ label() }}</p>
+    </header>
+
+    <p class="stat-widget__value">{{ formattedValue() }}</p>
+
+    @if (hasTrend()) {
+      <p
+        class="stat-widget__trend"
+        [class.stat-widget__trend--up]="trendDirection() === 'up'"
+        [class.stat-widget__trend--down]="trendDirection() === 'down'"
+        [class.stat-widget__trend--flat]="trendDirection() === 'flat'"
+      >
+        <span class="stat-widget__trend-arrow" aria-hidden="true">{{ trendArrow() }}</span>
+        <span>{{ trendText() }}</span>
+      </p>
+      <p class="sr-only">{{ trendAnnouncement() }}</p>
     }
-    <p class="stat-widget__label">{{ label() }}</p>
-  </header>
 
-  <p class="stat-widget__value">{{ formattedValue() }}</p>
-
-  @if (hasTrend()) {
-  <p
-    class="stat-widget__trend"
-    [class.stat-widget__trend--up]="trendDirection() === 'up'"
-    [class.stat-widget__trend--down]="trendDirection() === 'down'"
-    [class.stat-widget__trend--flat]="trendDirection() === 'flat'"
-  >
-    <span class="stat-widget__trend-arrow" aria-hidden="true">{{ trendArrow() }}</span>
-    <span>{{ trendText() }}</span>
-  </p>
-  <p class="sr-only">{{ trendAnnouncement() }}</p>
-  }
-
-  @if (sparkline(); as spark) {
-  <svg
-    class="stat-widget__sparkline"
-    viewBox="0 0 100 32"
-    role="img"
-    [attr.aria-label]="spark.label"
-    preserveAspectRatio="none"
-  >
-    <polyline
-      [attr.points]="spark.points"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      vector-effect="non-scaling-stroke"
-    />
-  </svg>
-  }
+    @if (sparkline(); as spark) {
+      <svg
+        class="stat-widget__sparkline"
+        viewBox="0 0 100 32"
+        role="img"
+        [attr.aria-label]="spark.label"
+        preserveAspectRatio="none"
+      >
+        <polyline
+          [attr.points]="spark.points"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          vector-effect="non-scaling-stroke"
+        />
+      </svg>
+    }
   }
 </ng-template>

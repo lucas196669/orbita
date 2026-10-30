@@ -1,189 +1,189 @@
 <div class="data-table" [attr.aria-busy]="loading()">
   <div class="data-table__toolbar">
     @if (searchable()) {
-    <form class="data-table__search" role="search" (submit)="$event.preventDefault()">
-      <label class="sr-only" [for]="searchId">Buscar en {{ caption() }}</label>
-      <span class="data-table__search-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" focusable="false">
-          <path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm10 2-4.35-4.35" />
-        </svg>
-      </span>
-      <input
-        class="data-table__search-input"
-        [id]="searchId"
-        type="search"
-        autocomplete="off"
-        [placeholder]="searchPlaceholder()"
-        [value]="searchValue()"
-        [attr.aria-controls]="tableId"
-        (input)="onSearchInput($event)"
-      />
-    </form>
+      <form class="data-table__search" role="search" (submit)="$event.preventDefault()">
+        <label class="sr-only" [for]="searchId">Buscar en {{ caption() }}</label>
+        <span class="data-table__search-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm10 2-4.35-4.35" />
+          </svg>
+        </span>
+        <input
+          class="data-table__search-input"
+          [id]="searchId"
+          type="search"
+          autocomplete="off"
+          [placeholder]="searchPlaceholder()"
+          [value]="searchValue()"
+          [attr.aria-controls]="tableId"
+          (input)="onSearchInput($event)"
+        />
+      </form>
     }
 
     <p class="sr-only" aria-live="polite">{{ announcement() }}</p>
   </div>
 
   @if (loading()) {
-  <p class="sr-only" role="status">Cargando datos…</p>
+    <p class="sr-only" role="status">Cargando datos…</p>
   }
 
   <div #tableRegion class="data-table__scroll" tabindex="-1">
     <table class="data-table__table" [id]="tableId" [attr.aria-busy]="loading()">
       <caption [id]="captionId" class="data-table__caption">
-        {{ caption() }}
+        {{
+          caption()
+        }}
       </caption>
 
       <thead>
         <tr>
           @if (selectable()) {
-          <th scope="col" class="data-table__cell--center data-table__select-cell">
-            <input
-              type="checkbox"
-              class="data-table__checkbox"
-              [checked]="allPageSelected()"
-              [indeterminate]="somePageSelected()"
-              aria-label="Seleccionar todas las filas de esta página"
-              (change)="toggleAll()"
-            />
-          </th>
+            <th scope="col" class="data-table__cell--center data-table__select-cell">
+              <input
+                type="checkbox"
+                class="data-table__checkbox"
+                [checked]="allPageSelected()"
+                [indeterminate]="somePageSelected()"
+                aria-label="Seleccionar todas las filas de esta página"
+                (change)="toggleAll()"
+              />
+            </th>
           }
 
           @for (column of columns(); track column.key) {
-          <th scope="col" [class]="alignClass(column)" [attr.aria-sort]="column.sortable ? ariaSort(column) : null">
-            @if (column.sortable) {
-            <button type="button" class="data-table__sort" (click)="toggleSort(column)">
-              <span>{{ column.header }}</span>
-              <span class="data-table__sort-icon" aria-hidden="true">{{ sortIcon(column) }}</span>
-            </button>
-            } @else {
-            {{ column.header }}
-            }
-          </th>
+            <th scope="col" [class]="alignClass(column)" [attr.aria-sort]="column.sortable ? ariaSort(column) : null">
+              @if (column.sortable) {
+                <button type="button" class="data-table__sort" (click)="toggleSort(column)">
+                  <span>{{ column.header }}</span>
+                  <span class="data-table__sort-icon" aria-hidden="true">{{ sortIcon(column) }}</span>
+                </button>
+              } @else {
+                {{ column.header }}
+              }
+            </th>
           }
 
           @if (rowActions().length > 0) {
-          <th scope="col" class="data-table__cell--end">Acciones</th>
+            <th scope="col" class="data-table__cell--end">Acciones</th>
           }
         </tr>
       </thead>
 
       <tbody>
         @if (loading()) {
-        @for (row of skeletonRows(); track row) {
-        <tr class="data-table__row data-table__row--skeleton">
-          @if (selectable()) {
-          <td class="data-table__cell--center" data-label="Selección">
-            <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
-          </td>
-          }
-          @for (column of columns(); track column.key) {
-          <td [class]="alignClass(column)" [attr.data-label]="column.header">
-            <span class="skeleton skeleton--line" aria-hidden="true"></span>
-          </td>
-          }
-          @if (rowActions().length > 0) {
-          <td class="data-table__cell--end" data-label="Acciones">
-            <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
-          </td>
-          }
-        </tr>
-        }
-        } @else if (isEmpty()) {
-        <tr>
-          <td class="data-table__empty" [attr.colspan]="colspan()">{{ emptyMessage() }}</td>
-        </tr>
-        } @else if (noResults()) {
-        <tr>
-          <td class="data-table__empty" [attr.colspan]="colspan()">
-            No hay resultados para «{{ activeSearch() }}».
-          </td>
-        </tr>
-        } @else {
-        @for (row of pageRows(); track rowKey(row)) {
-        <tr
-          class="data-table__row"
-          [class.data-table__row--selected]="selectable() && isSelected(row)"
-          [attr.aria-selected]="selectable() ? isSelected(row) : null"
-          (click)="onRowClick(row, $event)"
-        >
-          @if (selectable()) {
-          <td class="data-table__cell--center data-table__select-cell" data-label="Selección">
-            <input
-              type="checkbox"
-              class="data-table__checkbox"
-              [checked]="isSelected(row)"
-              [attr.aria-label]="selectionLabel(row)"
-              (click)="$event.stopPropagation()"
-              (change)="toggleRow(row, $event)"
-            />
-          </td>
-          }
-
-          @for (column of columns(); track column.key) {
-          <td [class]="alignClass(column)" [attr.data-label]="column.header">
-            @if (templateFor(column.key); as template) {
-            <ng-container
-              *ngTemplateOutlet="template.template; context: cellContext(row, column)"
-            ></ng-container>
-            } @else if (column.format === 'badge') {
-            <span class="data-table__badge">{{ cellText(row, column) }}</span>
-            } @else {
-            {{ cellText(row, column) }}
-            }
-          </td>
-          }
-
-          @if (rowActions().length > 0) {
-          <td class="data-table__cell--end data-table__actions" data-label="Acciones">
-            @for (action of rowActions(); track action.id) {
-            <button
-              type="button"
-              class="data-table__action"
-              [attr.aria-label]="actionLabel(action, row)"
-              (click)="onAction(action, row, $event)"
-            >
-              @if (action.icon) {
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path [attr.d]="action.icon" />
-              </svg>
+          @for (row of skeletonRows(); track row) {
+            <tr class="data-table__row data-table__row--skeleton">
+              @if (selectable()) {
+                <td class="data-table__cell--center" data-label="Selección">
+                  <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
+                </td>
               }
-              <span>{{ action.label }}</span>
-            </button>
-            }
-          </td>
+              @for (column of columns(); track column.key) {
+                <td [class]="alignClass(column)" [attr.data-label]="column.header">
+                  <span class="skeleton skeleton--line" aria-hidden="true"></span>
+                </td>
+              }
+              @if (rowActions().length > 0) {
+                <td class="data-table__cell--end" data-label="Acciones">
+                  <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
+                </td>
+              }
+            </tr>
           }
-        </tr>
-        }
+        } @else if (isEmpty()) {
+          <tr>
+            <td class="data-table__empty" [attr.colspan]="colspan()">{{ emptyMessage() }}</td>
+          </tr>
+        } @else if (noResults()) {
+          <tr>
+            <td class="data-table__empty" [attr.colspan]="colspan()">No hay resultados para «{{ activeSearch() }}».</td>
+          </tr>
+        } @else {
+          @for (row of pageRows(); track rowKey(row)) {
+            <tr
+              class="data-table__row"
+              [class.data-table__row--selected]="selectable() && isSelected(row)"
+              [attr.aria-selected]="selectable() ? isSelected(row) : null"
+              (click)="onRowClick(row, $event)"
+            >
+              @if (selectable()) {
+                <td class="data-table__cell--center data-table__select-cell" data-label="Selección">
+                  <input
+                    type="checkbox"
+                    class="data-table__checkbox"
+                    [checked]="isSelected(row)"
+                    [attr.aria-label]="selectionLabel(row)"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleRow(row, $event)"
+                  />
+                </td>
+              }
+
+              @for (column of columns(); track column.key) {
+                <td [class]="alignClass(column)" [attr.data-label]="column.header">
+                  @if (templateFor(column.key); as template) {
+                    <ng-container
+                      *ngTemplateOutlet="template.template; context: cellContext(row, column)"
+                    ></ng-container>
+                  } @else if (column.format === 'badge') {
+                    <span class="data-table__badge">{{ cellText(row, column) }}</span>
+                  } @else {
+                    {{ cellText(row, column) }}
+                  }
+                </td>
+              }
+
+              @if (rowActions().length > 0) {
+                <td class="data-table__cell--end data-table__actions" data-label="Acciones">
+                  @for (action of rowActions(); track action.id) {
+                    <button
+                      type="button"
+                      class="data-table__action"
+                      [attr.aria-label]="actionLabel(action, row)"
+                      (click)="onAction(action, row, $event)"
+                    >
+                      @if (action.icon) {
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path [attr.d]="action.icon" />
+                        </svg>
+                      }
+                      <span>{{ action.label }}</span>
+                    </button>
+                  }
+                </td>
+              }
+            </tr>
+          }
         }
       </tbody>
     </table>
   </div>
 
   @if (showPagination()) {
-  <nav class="data-table__pagination" [attr.aria-label]="'Paginación de ' + caption()">
-    <p class="data-table__range">Mostrando {{ pageStart() }}–{{ pageEnd() }} de {{ sortedRows().length }}</p>
-    <div class="data-table__pages">
-      <button
-        type="button"
-        class="data-table__page-button"
-        aria-label="Página anterior"
-        [disabled]="currentPage() === 1"
-        (click)="goToPage(currentPage() - 1)"
-      >
-        Anterior
-      </button>
-      <span class="data-table__page-status">Página {{ currentPage() }} de {{ totalPages() }}</span>
-      <button
-        type="button"
-        class="data-table__page-button"
-        aria-label="Página siguiente"
-        [disabled]="currentPage() === totalPages()"
-        (click)="goToPage(currentPage() + 1)"
-      >
-        Siguiente
-      </button>
-    </div>
-  </nav>
+    <nav class="data-table__pagination" [attr.aria-label]="'Paginación de ' + caption()">
+      <p class="data-table__range">Mostrando {{ pageStart() }}–{{ pageEnd() }} de {{ sortedRows().length }}</p>
+      <div class="data-table__pages">
+        <button
+          type="button"
+          class="data-table__page-button"
+          aria-label="Página anterior"
+          [disabled]="currentPage() === 1"
+          (click)="goToPage(currentPage() - 1)"
+        >
+          Anterior
+        </button>
+        <span class="data-table__page-status">Página {{ currentPage() }} de {{ totalPages() }}</span>
+        <button
+          type="button"
+          class="data-table__page-button"
+          aria-label="Página siguiente"
+          [disabled]="currentPage() === totalPages()"
+          (click)="goToPage(currentPage() + 1)"
+        >
+          Siguiente
+        </button>
+      </div>
+    </nav>
   }
 </div>

@@ -148,9 +148,7 @@ export class StatWidgetComponent {
   });
 
   /** Datos de la sparkline o `null` si no hay serie suficiente. */
-  readonly sparkline = computed<SparklineData | null>(() =>
-    buildSparkline(this.series(), this.format(), this.label()),
-  );
+  readonly sparkline = computed<SparklineData | null>(() => buildSparkline(this.series(), this.format(), this.label()));
 
   constructor() {
     effect(() => {

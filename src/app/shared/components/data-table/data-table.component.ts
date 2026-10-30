@@ -6,13 +6,13 @@ import {
   contentChildren,
   DestroyRef,
   effect,
-  ElementRef,
   inject,
   input,
   output,
   signal,
   viewChild,
 } from '@angular/core';
+import type { ElementRef } from '@angular/core';
 
 import { formatCellValue } from './cell-format';
 import type {
@@ -166,9 +166,7 @@ export class DataTableComponent<T extends object = Record<string, unknown>> {
   });
 
   /** Total de páginas disponibles. */
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.sortedRows().length / this.effectivePageSize())),
-  );
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.sortedRows().length / this.effectivePageSize())));
 
   /** Página actual, acotada al total de páginas. */
   readonly currentPage = computed(() => Math.min(this.requestedPage(), this.totalPages()));
@@ -185,22 +183,16 @@ export class DataTableComponent<T extends object = Record<string, unknown>> {
   );
 
   /** Última fila visible de la página. */
-  readonly pageEnd = computed(() =>
-    Math.min(this.currentPage() * this.effectivePageSize(), this.sortedRows().length),
-  );
+  readonly pageEnd = computed(() => Math.min(this.currentPage() * this.effectivePageSize(), this.sortedRows().length));
 
   /** No hay datos que mostrar. */
   readonly isEmpty = computed(() => !this.loading() && this.data().length === 0);
 
   /** Hay datos, pero el filtro no devuelve resultados. */
-  readonly noResults = computed(
-    () => !this.loading() && this.data().length > 0 && this.filteredRows().length === 0,
-  );
+  readonly noResults = computed(() => !this.loading() && this.data().length > 0 && this.filteredRows().length === 0);
 
   /** Debe mostrarse la paginación. */
-  readonly showPagination = computed(
-    () => !this.loading() && this.sortedRows().length > this.effectivePageSize(),
-  );
+  readonly showPagination = computed(() => !this.loading() && this.sortedRows().length > this.effectivePageSize());
 
   /** Todas las filas de la página están seleccionadas. */
   readonly allPageSelected = computed(() => {
@@ -234,11 +226,7 @@ export class DataTableComponent<T extends object = Record<string, unknown>> {
       const total = this.sortedRows().length;
       const page = this.currentPage();
       const pages = this.totalPages();
-      this.announcementState.set(
-        total === 0
-          ? 'Sin resultados.'
-          : `${total} resultados. Página ${page} de ${pages}.`,
-      );
+      this.announcementState.set(total === 0 ? 'Sin resultados.' : `${total} resultados. Página ${page} de ${pages}.`);
     });
 
     this.destroyRef.onDestroy(() => {

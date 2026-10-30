@@ -22,64 +22,52 @@
   font-size: var(--text-sm);
 }
 
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
-  gap: var(--space-4);
-  margin: 0;
+.stock-value {
+  font-weight: var(--weight-semibold);
+}
+
+.stock-value--low {
+  color: var(--color-danger);
+}
+
+.confirm-dialog {
+  width: min(100% - var(--space-8), 32rem);
   padding: 0;
-  list-style: none;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
 }
 
-.product-card {
-  gap: var(--space-3);
+.confirm-dialog::backdrop {
+  background: color-mix(in srgb, var(--color-bg) 78%, transparent);
 }
 
-.product-card__top {
-  justify-content: space-between;
+.confirm-dialog__panel {
+  margin: 0;
+  border-color: var(--color-border-strong);
 }
 
-.product-card h2 {
+.confirm-dialog__panel h2 {
   margin: 0;
   font-size: var(--text-xl);
 }
 
-.product-card__edit {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1.75rem;
-  padding-inline: var(--space-3);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-full);
+.confirm-dialog__panel p {
+  margin: 0;
   color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
 }
 
-.product-card__data {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
-  margin: 0;
+.confirm-dialog__actions {
+  justify-content: flex-end;
 }
 
-.product-card__data dt {
-  color: var(--color-text-subtle);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
+.btn--danger {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
-.product-card__data dd {
-  margin: 0;
-  color: var(--color-text);
-  font-weight: var(--weight-semibold);
+.btn--danger:hover:not(:disabled) {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: var(--color-bg);
 }

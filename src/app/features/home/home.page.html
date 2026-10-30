@@ -1,26 +1,38 @@
-<section class="page stack">
-  <header class="page__header stack">
-    <p class="page__eyebrow">Inicio · {{ vm.roleLabel() }}</p>
-    <h1>Hola, {{ vm.displayName() }}</h1>
-    <p class="page__lede">{{ vm.greeting() }}</p>
-  </header>
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#inicio-contenido">Saltar al contenido</a>
 
-  <section class="bento" aria-label="Resumen de tu espacio de trabajo">
-    @for (highlight of vm.highlights(); track highlight.title) {
-    <article class="card stack">
-      <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
-      <h2 class="page__card-title">{{ highlight.title }}</h2>
-      <p class="page__lede">{{ highlight.description }}</p>
-    </article>
+  <main id="inicio-contenido" class="page-shell stack">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Inicio · {{ vm.roleLabel() }}</p>
+        <h1>Hola, {{ vm.displayName() }}</h1>
+        <p>{{ vm.greeting() }}</p>
+      </div>
+    </header>
+
+    @if (vm.error(); as error) {
+    <p class="empty-state" role="alert">{{ error }}</p>
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="vm.load()">Reintentar</button>
+    </div>
     }
-  </section>
 
-  <section class="card stack" aria-labelledby="home-next">
-    <p class="page__eyebrow">Próximamente</p>
-    <h2 id="home-next" class="page__card-title">Módulos conectados a datos reales</h2>
-    <p class="page__lede">
-      Estamos preparando la integración con Supabase para que los indicadores y las tablas muestren información en vivo.
-    </p>
-    <div class="skeleton skeleton--block" aria-hidden="true"></div>
-  </section>
-</section>
+    <section class="bento stats" aria-label="Resumen de tu espacio de trabajo">
+      @for (stat of vm.stats(); track stat.label) {
+      <app-stat-widget
+        [label]="stat.label"
+        [value]="stat.value"
+        [format]="stat.format"
+        [trend]="stat.trend"
+        [trendLabel]="stat.trendLabel"
+        [icon]="stat.icon"
+        [series]="stat.series"
+        [loading]="vm.loading()"
+        [accent]="stat.accent"
+        [interactive]="stat.link !== null"
+        (widgetClick)="open(stat)"
+      />
+      }
+    </section>
+  </main>
+</ion-content>

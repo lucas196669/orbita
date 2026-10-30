@@ -82,6 +82,19 @@ export class ProductsService {
   }
 
   /**
+   * Elimina un producto por su identificador.
+   *
+   * @param id Identificador del producto.
+   */
+  async delete(id: string): Promise<void> {
+    const { error } = await this.supabase.client.from('products').delete().eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Actualiza un producto existente.
    *
    * @param id Identificador del producto.
