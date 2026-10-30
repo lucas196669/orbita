@@ -2,6 +2,44 @@
   display: block;
 }
 
+ion-content {
+  --background: var(--color-bg, #0b0d12);
+}
+
+/* Layout propio del login: no depende de CSS global */
+.page-shell {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: max(var(--space-4, 1rem), env(safe-area-inset-top, 0px))
+    max(var(--space-4, 1rem), env(safe-area-inset-right, 0px))
+    max(var(--space-4, 1rem), env(safe-area-inset-bottom, 0px))
+    max(var(--space-4, 1rem), env(safe-area-inset-left, 0px));
+}
+
+/* Oculto fuera de pantalla hasta recibir foco */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: var(--radius-md, 0.5rem);
+  background: var(--color-accent, #c8f542);
+  color: var(--color-on-accent, #0b0d12);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
 .auth-card {
   width: min(100%, 40rem);
   margin-inline: auto;

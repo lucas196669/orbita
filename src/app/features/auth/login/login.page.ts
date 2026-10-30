@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -22,6 +23,7 @@ export class LoginPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly document = inject(DOCUMENT);
 
   /** Formulario reactivo de acceso. */
   readonly form = this.fb.nonNullable.group({
@@ -74,6 +76,11 @@ export class LoginPage {
     return this.isInvalid(name) ? controlErrorMessage(this.form.get(name), label) : null;
   }
 
+  /** Lleva el foco al primer campo del formulario (enlace "Saltar al formulario"). */
+  focusForm(): void {
+    this.document.getElementById('login-email')?.focus();
+  }
+
   /** Inicia sesión si el formulario es válido. */
   async submit(): Promise<void> {
     this.submitAttempted.set(true);
@@ -102,8 +109,10 @@ export class LoginPage {
   }
 
   private safeRedirect(): string {
-    const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
+    const target =
+      this.route.snapshot.queryParamMap.get('returnUrl') ??
+      this.route.snapshot.queryParamMap.get('redirectTo');
 
-    return redirectTo?.startsWith('/app/') ? redirectTo : '/app/inicio';
+    return target?.startsWith('/app/') ? target : '/app/inicio';
   }
 }
