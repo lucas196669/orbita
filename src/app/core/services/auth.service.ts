@@ -3,6 +3,7 @@ import type { AuthError, Session } from '@supabase/supabase-js';
 
 import type { AppUser, Role } from '../models/user.model';
 
+import { FirestoreActivityService } from './firestore-activity.service';
 import { SupabaseService } from './supabase.service';
 
 /** Resultado de un intento de inicio de sesión. */
@@ -30,6 +31,7 @@ export class AuthService {
   private readonly supabaseService = inject(SupabaseService);
   private readonly supabase = this.supabaseService.client;
   private readonly destroyRef = inject(DestroyRef);
+  private readonly activity = inject(FirestoreActivityService, { optional: true });
 
   private readonly sessionState = signal<Session | null>(null);
   private readonly userState = signal<AppUser | null>(null);
@@ -111,6 +113,8 @@ export class AuthService {
         this.clearSession();
         return { ok: false, message: 'Tu cuenta no tiene un perfil configurado.' };
       }
+
+      this.recordActivity('Inicio de sesión', data.session.user.email ?? 'Usuario');
 
       return { ok: true };
     } catch {
@@ -243,6 +247,14 @@ export class AuthService {
       fullName: data.full_name,
       role: this.normalizeRole(data.role),
     };
+  }
+
+  private recordActivity(action: string, actor: string, detail?: string): void {
+    if (!this.activity) {
+      return;
+    }
+
+    void this.activity.log(action, actor, detail).catch(() => undefined);
   }
 
   private normalizeRole(value: string | null): Role {
