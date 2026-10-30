@@ -9,10 +9,20 @@
         <p>Sigue el estado de cada pedido, su producto y el importe facturado.</p>
       </div>
 
-      <span class="user-chip">{{ vm.displayName() }}</span>
+      <div class="cluster">
+        <span class="user-chip">{{ vm.displayName() }}</span>
+        <button type="button" class="btn" (click)="exportCsv()" [disabled]="exporting()">Exportar CSV</button>
+        <button type="button" class="btn" (click)="exportPdf()" [disabled]="exporting()">
+          @if (exporting()) {
+          <span class="spinner spinner--sm" aria-hidden="true"></span>
+          Generando PDF… } @else { Exportar PDF }
+        </button>
+      </div>
     </header>
 
-    @if (vm.error(); as error) {
+    @if (toast.message(); as message) {
+    <app-toast [message]="message" (dismissed)="toast.clear()" />
+    } @if (vm.error(); as error) {
     <p class="empty-state" role="alert">{{ error }}</p>
     <div class="form-actions">
       <button type="button" class="btn" (click)="vm.load()">Reintentar</button>
