@@ -74,7 +74,7 @@ src/app/
 - `core/services` se provee en raíz; los datos de Supabase y Firestore se
   encapsulan en servicios separados.
 
-## Rutas y control de acceso (Fase 1)
+## Rutas y control de acceso
 
 Todas las páginas se cargan con `loadComponent` (lazy loading) y
 `withComponentInputBinding()` / `withPreloading(PreloadAllModules)`.
@@ -82,10 +82,13 @@ Todas las páginas se cargan con `loadComponent` (lazy loading) y
 | Ruta | Página | Acceso |
 | --- | --- | --- |
 | `/login` | `features/auth/login` | Solo invitados (`guestGuard`) |
+| `/registro` | `features/auth/register` | Solo invitados (`guestGuard`) |
 | `/app` | `layout/shell` | Autenticado (`authGuard`) |
 | `/app/inicio` | `features/home` | Autenticado |
 | `/app/dashboard` | `features/dashboard` | Solo `admin` (`roleGuard`) |
-| `/app/productos` | `features/products` | Autenticado |
+| `/app/productos` | `features/products/product-list` | Autenticado |
+| `/app/productos/nuevo` | `features/products/product-form` | Solo `admin` (`roleGuard`) |
+| `/app/productos/:id/editar` | `features/products/product-form` | Solo `admin` (`roleGuard`) |
 | `/app/pedidos` | `features/orders` | Autenticado |
 | `/app/ayuda` | `features/help` | Autenticado |
 | `/acceso-denegado` | `features/errors` (403) | Pública |
@@ -100,6 +103,28 @@ Todas las páginas se cargan con `loadComponent` (lazy loading) y
   de la tabla `profiles`; nunca de `localStorage` ni del cliente.
 - `authInterceptor` añade `Authorization: Bearer <access_token>` a las
   peticiones de Supabase y, ante un `401`, cierra sesión y vuelve a `/login`.
+
+## Formularios y validadores
+
+- `shared/components/form-field` (`app-form-field`) envuelve etiqueta, control
+  proyectado, ayuda, estado pendiente y errores con `aria-describedby`.
+- `shared/validators/unique-email.validator.ts`: debounce de 400 ms,
+  cancelación con `switchMap` y error `emailTaken`.
+- `shared/validators/unique-product-name.validator.ts`: igual que el anterior,
+  con error `nameTaken` e ignorando el nombre original en edición.
+- `shared/validators/password.validator.ts`: `passwordStrength` y
+  `matchFields('password', 'confirmPassword')`.
+- `shared/validators/product.validator.ts`: `maxTwoDecimals` e
+  `integerNumber`.
+- Los fallos de validación remota no bloquean el envío: se registran con
+  `validationNotice` y se muestran como aviso discreto.
+- Los formularios usan `FormBuilder.nonNullable`, signals para estado derivado
+  y `toSignal` para reaccionar a `statusChanges` y `valueChanges`.
+- El registro usa `updateOn: 'blur'` solo en el email y `supabase.auth.signUp`
+  con `options.data.full_name`; el rol siempre lo asigna el servidor.
+- `shared/components/toast` (`app-toast`) anuncia mensajes con
+  `role="status"` y `aria-live="polite"`.
+>>>>>>> feature/fase2-formularios
 
 ## Sistema de diseño
 
@@ -131,4 +156,7 @@ npm run test:e2e     # tests e2e (Playwright)
 npm run docs         # generar documentación Compodoc en documentation/
 ```
 
-Antes de cerrar una tarea: `npm run build` y `npm run lint` deben pasar.
+Antes de cerrar una tarea: `npm run build`, `npm run lint` y
+`npm run test:unit` deben pasar. Los tests unitarios usan Vitest y `fakeAsync`
+con una `ProxyZone` de `zone.js` cargada solo en la configuración `test` de
+`angular.json`; la aplicación sigue siendo zoneless.

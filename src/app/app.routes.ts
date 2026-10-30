@@ -13,6 +13,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.page').then((module) => module.LoginPage),
   },
   {
+    path: 'registro',
+    title: 'Crear cuenta · Orbita',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/register/register.page').then((module) => module.RegisterPage),
+  },
+  {
     path: 'app',
     canActivate: [authGuard],
     loadComponent: () => import('./layout/shell/shell.component').then((module) => module.ShellComponent),
@@ -30,9 +36,26 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.page').then((module) => module.DashboardPage),
       },
       {
+        path: 'productos/nuevo',
+        title: 'Nuevo producto · Orbita',
+        canActivate: [roleGuard],
+        data: { roles: ['admin'] },
+        loadComponent: () =>
+          import('./features/products/product-form/product-form.page').then((module) => module.ProductFormPage),
+      },
+      {
+        path: 'productos/:id/editar',
+        title: 'Editar producto · Orbita',
+        canActivate: [roleGuard],
+        data: { roles: ['admin'] },
+        loadComponent: () =>
+          import('./features/products/product-form/product-form.page').then((module) => module.ProductFormPage),
+      },
+      {
         path: 'productos',
         title: 'Productos · Orbita',
-        loadComponent: () => import('./features/products/products.page').then((module) => module.ProductsPage),
+        loadComponent: () =>
+          import('./features/products/product-list/product-list.page').then((module) => module.ProductListPage),
       },
       {
         path: 'pedidos',

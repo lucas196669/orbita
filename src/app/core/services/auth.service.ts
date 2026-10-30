@@ -8,6 +8,12 @@ import { SupabaseService } from './supabase.service';
 /** Resultado de un intento de inicio de sesión. */
 export type AuthResult = { readonly ok: true } | { readonly ok: false; readonly message: string };
 
+/** Resultado del alta de una cuenta. */
+export interface SignUpOutcome {
+  /** Indica si el alta ha dejado una sesión activa. */
+  readonly hasSession: boolean;
+}
+
 interface ProfileRow {
   readonly role: string | null;
   readonly full_name: string | null;
@@ -21,7 +27,8 @@ interface ProfileRow {
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly supabase = inject(SupabaseService).client;
+  private readonly supabaseService = inject(SupabaseService);
+  private readonly supabase = this.supabaseService.client;
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly sessionState = signal<Session | null>(null);
@@ -37,6 +44,8 @@ export class AuthService {
   readonly session = this.sessionState.asReadonly();
   /** Usuario de aplicación con su rol. */
   readonly user = this.userState.asReadonly();
+  /** Alias del perfil público del usuario autenticado. */
+  readonly profile = this.userState.asReadonly();
   /** Indica si hay una operación de autenticación en curso. */
   readonly loading = this.loadingState.asReadonly();
   /** Indica si la sesión inicial ya se ha resuelto. */
@@ -55,14 +64,22 @@ export class AuthService {
   /**
    * Restaura la sesión, carga el rol y escucha cambios de autenticación.
    * Se ejecuta como inicializador de la aplicación.
+   *
+   * @returns Promesa resuelta cuando la sesión inicial está lista.
    */
   init(): Promise<void> {
     this.initPromise ??= this.bootstrap();
     return this.initPromise;
   }
 
+  /** Espera a que la sesión inicial esté resuelta. */
+  async ready(): Promise<void> {
+    await this.init();
+  }
+
   /**
    * Inicia sesión con correo y contraseña.
+   *
    * @param email Correo introducido por la persona usuaria.
    * @param password Contraseña introducida por la persona usuaria.
    * @returns Resultado con un mensaje de usuario en español si falla.
@@ -103,6 +120,45 @@ export class AuthService {
     }
   }
 
+  /**
+   * Inicia sesión y lanza un error si las credenciales no son válidas.
+   *
+   * @param email Correo electrónico.
+   * @param password Contraseña.
+   */
+  async signIn(email: string, password: string): Promise<void> {
+    const result = await this.login(email, password);
+
+    if (!result.ok) {
+      throw new Error(result.message);
+    }
+  }
+
+  /**
+   * Crea una cuenta y actualiza el estado de sesión.
+   *
+   * @param fullName Nombre completo del usuario.
+   * @param email Correo electrónico.
+   * @param password Contraseña.
+   * @returns Resultado con la existencia de sesión.
+   */
+  async signUp(fullName: string, email: string, password: string): Promise<SignUpOutcome> {
+    const result = await this.supabaseService.signUp(fullName, email, password);
+    await this.applySession(result.session);
+
+    return { hasSession: result.session !== null };
+  }
+
+  /**
+   * Garantiza que la sesión y el perfil estén cargados.
+   *
+   * @returns Perfil actual o `null` si no hay sesión.
+   */
+  async ensureProfile(): Promise<AppUser | null> {
+    await this.init();
+    return this.userState();
+  }
+
   /** Cierra la sesión y limpia el estado local. */
   async logout(): Promise<void> {
     this.loadingState.set(true);
@@ -115,6 +171,11 @@ export class AuthService {
 
     this.clearSession();
     this.loadingState.set(false);
+  }
+
+  /** Alias de cierre de sesión usado por las vistas de la fase 2. */
+  async signOut(): Promise<void> {
+    await this.logout();
   }
 
   private async bootstrap(): Promise<void> {

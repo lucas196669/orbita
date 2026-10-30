@@ -1,0 +1,154 @@
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#producto-formulario">Saltar al formulario</a>
+
+  <main class="page-shell stack">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Catálogo</p>
+        <h1>{{ isEdit() ? 'Editar producto' : 'Nuevo producto' }}</h1>
+        <p>Completa los datos del producto. El nombre debe ser único y el precio admite dos decimales.</p>
+      </div>
+
+      <a routerLink="/app/productos" class="btn btn--ghost">Volver al listado</a>
+    </header>
+
+    @if (loading()) {
+    <p class="loading-state" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Cargando producto…
+    </p>
+    } @else if (loadError()) {
+    <p class="empty-state" role="alert">{{ loadError() }}</p>
+    <div class="form-actions">
+      <a routerLink="/app/productos" class="btn">Volver al listado</a>
+    </div>
+    } @else {
+    <div class="product-layout">
+      <section class="card stack" aria-labelledby="producto-form-titulo">
+        <h2 id="producto-form-titulo" class="sr-only">Datos del producto</h2>
+
+        <div class="form-summary" aria-live="polite">
+          @if (submitAttempted() && form.invalid) { Revisa los campos marcados antes de guardar. }
+        </div>
+
+        @if (serverError()) {
+        <p class="form-summary" role="alert">{{ serverError() }}</p>
+        }
+
+        <form id="producto-formulario" [formGroup]="form" (ngSubmit)="submit()" novalidate class="stack">
+          <app-form-field
+            #nameField
+            inputId="product-name"
+            label="Nombre"
+            [required]="true"
+            [hint]="nameHint()"
+            [error]="errorFor('name', 'Nombre')"
+            [pending]="isPending('name')"
+          >
+            <input
+              id="product-name"
+              class="form-control"
+              type="text"
+              formControlName="name"
+              autocomplete="off"
+              placeholder="Teclado mecánico"
+              [attr.aria-invalid]="isInvalid('name')"
+              [attr.aria-busy]="isPending('name') ? 'true' : null"
+              [attr.aria-describedby]="nameField.describedBy"
+            />
+          </app-form-field>
+
+          <app-form-field
+            #categoryField
+            inputId="product-category"
+            label="Categoría"
+            [required]="true"
+            [error]="errorFor('category', 'Categoría')"
+          >
+            <select
+              id="product-category"
+              class="form-control"
+              formControlName="category"
+              [attr.aria-invalid]="isInvalid('category')"
+              [attr.aria-describedby]="categoryField.describedBy"
+            >
+              @for (category of categories; track category) {
+              <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </app-form-field>
+
+          <div class="form-grid">
+            <app-form-field
+              #priceField
+              inputId="product-price"
+              label="Precio (€)"
+              [required]="true"
+              hint="Mayor que 0 y con dos decimales como máximo."
+              [error]="errorFor('price', 'Precio')"
+            >
+              <input
+                id="product-price"
+                class="form-control"
+                type="number"
+                formControlName="price"
+                min="0.01"
+                step="0.01"
+                inputmode="decimal"
+                [attr.aria-invalid]="isInvalid('price')"
+                [attr.aria-describedby]="priceField.describedBy"
+              />
+            </app-form-field>
+
+            <app-form-field
+              #stockField
+              inputId="product-stock"
+              label="Stock"
+              [required]="true"
+              hint="Número entero mayor o igual que 0."
+              [error]="errorFor('stock', 'Stock')"
+            >
+              <input
+                id="product-stock"
+                class="form-control"
+                type="number"
+                formControlName="stock"
+                min="0"
+                step="1"
+                inputmode="numeric"
+                [attr.aria-invalid]="isInvalid('stock')"
+                [attr.aria-describedby]="stockField.describedBy"
+              />
+            </app-form-field>
+          </div>
+
+          <div class="form-actions">
+            <a routerLink="/app/productos" class="btn btn--ghost">Cancelar</a>
+            <button type="submit" class="btn btn--primary" [disabled]="isBusy()">
+              @if (submitting()) {
+              <span class="spinner" aria-hidden="true"></span>
+              Guardando… } @else { {{ isEdit() ? 'Guardar cambios' : 'Crear producto' }} }
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="preview card stack" aria-labelledby="preview-titulo">
+        <p class="preview__meta">Vista previa en vivo</p>
+        <h2 id="preview-titulo">{{ preview().name }}</h2>
+        <span class="pill">{{ preview().category }}</span>
+        <dl class="preview__data">
+          <div>
+            <dt>Precio</dt>
+            <dd>{{ preview().price | number: '1.2-2' }} €</dd>
+          </div>
+          <div>
+            <dt>Stock</dt>
+            <dd>{{ preview().stock }} uds.</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+    }
+  </main>
+</ion-content>

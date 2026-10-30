@@ -1,0 +1,83 @@
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#productos-contenido">Saltar al contenido</a>
+
+  <main id="productos-contenido" class="page-shell stack">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Catálogo</p>
+        <h1>Productos</h1>
+        <p>Consulta el inventario disponible. La edición avanzada llegará en la siguiente fase.</p>
+      </div>
+
+      <div class="cluster">
+        <span class="user-chip">{{ displayName() }}</span>
+        <button type="button" class="btn btn--ghost" (click)="signOut()">Cerrar sesión</button>
+        @if (isAdmin()) {
+        <a routerLink="/app/productos/nuevo" class="btn btn--primary">Nuevo producto</a>
+        }
+      </div>
+    </header>
+
+    @if (toast.message(); as message) {
+    <app-toast [message]="message" (dismissed)="toast.clear()" />
+    }
+
+    <app-form-field
+      #searchField
+      inputId="product-search"
+      label="Buscar productos"
+      hint="Filtra por nombre o categoría."
+    >
+      <input
+        id="product-search"
+        class="form-control"
+        type="search"
+        name="productSearch"
+        [(ngModel)]="searchTerm"
+        autocomplete="off"
+        placeholder="Teclado, Software…"
+        [attr.aria-describedby]="searchField.describedBy"
+      />
+    </app-form-field>
+
+    <div aria-live="polite">
+      @if (loading()) {
+      <p class="loading-state" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        Cargando productos…
+      </p>
+      } @else if (error()) {
+      <p class="empty-state" role="alert">{{ error() }}</p>
+      <div class="form-actions">
+        <button type="button" class="btn" (click)="load()">Reintentar</button>
+      </div>
+      } @else if (filteredProducts().length === 0) {
+      <p class="empty-state">No hay productos que coincidan con la búsqueda.</p>
+      } @else {
+      <ul class="product-grid" role="list">
+        @for (product of filteredProducts(); track product.id) {
+        <li class="product-card card stack">
+          <div class="cluster product-card__top">
+            <span class="pill">{{ product.category }}</span>
+            @if (isAdmin()) {
+            <a class="product-card__edit" [routerLink]="['/app/productos', product.id, 'editar']">Editar</a>
+            }
+          </div>
+          <h2>{{ product.name }}</h2>
+          <dl class="product-card__data">
+            <div>
+              <dt>Precio</dt>
+              <dd>{{ product.price | number: '1.2-2' }} €</dd>
+            </div>
+            <div>
+              <dt>Stock</dt>
+              <dd>{{ product.stock }} uds.</dd>
+            </div>
+          </dl>
+        </li>
+        }
+      </ul>
+      }
+    </div>
+  </main>
+</ion-content>
