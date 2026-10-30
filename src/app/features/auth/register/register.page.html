@@ -1,0 +1,128 @@
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#registro-formulario">Saltar al formulario</a>
+
+  <main class="page-shell">
+    <section class="auth-card card stack" aria-labelledby="registro-titulo">
+      <header class="auth-header stack">
+        <p class="eyebrow">Orbita · Acceso</p>
+        <h1 id="registro-titulo">Crea tu cuenta</h1>
+        <p>Gestiona productos y pedidos desde un único espacio de trabajo.</p>
+      </header>
+
+      <div class="form-summary" aria-live="polite">
+        @if (submitAttempted() && form.invalid) { Revisa los campos marcados antes de continuar. }
+      </div>
+
+      @if (serverError()) {
+      <p class="form-summary" role="alert">{{ serverError() }}</p>
+      }
+
+      <form id="registro-formulario" [formGroup]="form" (ngSubmit)="submit()" novalidate class="stack">
+        <app-form-field
+          #fullNameField
+          inputId="register-full-name"
+          label="Nombre completo"
+          [required]="true"
+          [error]="errorFor('fullName', 'Nombre completo')"
+        >
+          <input
+            id="register-full-name"
+            class="form-control"
+            type="text"
+            formControlName="fullName"
+            autocomplete="name"
+            placeholder="Ada Lovelace"
+            [attr.aria-invalid]="isInvalid('fullName')"
+            [attr.aria-describedby]="fullNameField.describedBy"
+          />
+        </app-form-field>
+
+        <app-form-field
+          #emailField
+          inputId="register-email"
+          label="Correo electrónico"
+          [required]="true"
+          [hint]="emailHint()"
+          [error]="errorFor('email', 'Correo electrónico')"
+          [pending]="isPending('email')"
+        >
+          <input
+            id="register-email"
+            class="form-control"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="tu@correo.com"
+            [attr.aria-invalid]="isInvalid('email')"
+            [attr.aria-busy]="isPending('email') ? 'true' : null"
+            [attr.aria-describedby]="emailField.describedBy"
+          />
+        </app-form-field>
+
+        <div class="form-grid">
+          <app-form-field
+            #passwordField
+            inputId="register-password"
+            label="Contraseña"
+            [required]="true"
+            hint="Mínimo 8 caracteres con mayúscula, minúscula, número y símbolo."
+            [error]="errorFor('password', 'Contraseña')"
+          >
+            <input
+              id="register-password"
+              class="form-control"
+              type="password"
+              formControlName="password"
+              autocomplete="new-password"
+              [attr.aria-invalid]="isInvalid('password')"
+              [attr.aria-describedby]="passwordField.describedBy"
+            />
+          </app-form-field>
+
+          <app-form-field
+            #confirmField
+            inputId="register-confirm-password"
+            label="Repetir contraseña"
+            [required]="true"
+            [error]="confirmError()"
+          >
+            <input
+              id="register-confirm-password"
+              class="form-control"
+              type="password"
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+              [attr.aria-invalid]="isInvalid('confirmPassword') || !!confirmError()"
+              [attr.aria-describedby]="confirmField.describedBy"
+            />
+          </app-form-field>
+        </div>
+
+        <div class="checkbox-field">
+          <input
+            id="register-terms"
+            type="checkbox"
+            formControlName="terms"
+            [attr.aria-invalid]="isInvalid('terms')"
+            [attr.aria-describedby]="isInvalid('terms') ? 'register-terms-error' : null"
+          />
+          <label for="register-terms">Acepto los términos de uso y la política de privacidad.</label>
+          @if (isInvalid('terms')) {
+          <p id="register-terms-error" class="field-error" role="alert">
+            Debes aceptar los términos para crear la cuenta.
+          </p>
+          }
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/login" class="btn btn--ghost">Ya tengo cuenta</a>
+          <button type="submit" class="btn btn--primary" [disabled]="isBusy()">
+            @if (submitting()) {
+            <span class="spinner" aria-hidden="true"></span>
+            Creando cuenta… } @else { Crear cuenta }
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+</ion-content>

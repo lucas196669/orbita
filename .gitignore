@@ -25,9 +25,21 @@ log.txt
 
 # Compiled output
 /dist
+/www
 /tmp
 /out-tsc
 /bazel-out
+
+# Documentation
+/documentation
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel
 
 # Node
 /node_modules
