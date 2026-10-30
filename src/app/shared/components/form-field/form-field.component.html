@@ -1,0 +1,28 @@
+<div class="field" [class.field--invalid]="!!error" [class.field--pending]="pending">
+  <label class="field__label" [for]="inputId">
+    {{ label }}
+    @if (required) {
+      <span class="field__required" aria-hidden="true">*</span>
+      <span class="sr-only">(obligatorio)</span>
+    }
+  </label>
+
+  <div class="field__control">
+    <ng-content />
+  </div>
+
+  @if (hint) {
+    <p class="field__hint" [id]="hintId">{{ hint }}</p>
+  }
+
+  @if (pending) {
+    <p class="field__pending" [id]="pendingId" role="status">
+      <span class="spinner spinner--sm" aria-hidden="true"></span>
+      Validando…
+    </p>
+  }
+
+  @if (error) {
+    <p class="field__error" [id]="errorId" role="alert">{{ error }}</p>
+  }
+</div>
