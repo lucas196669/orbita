@@ -1,3 +1,7 @@
+// Zone is only needed by the test helpers (fakeAsync); the app itself runs zoneless.
+import 'zone.js';
+import 'zone.js/testing';
+
 // Polyfills for running unit tests under jsdom (the default Vitest environment).
 // Ionic components such as ion-menu and ion-split-pane query `window.matchMedia`,
 // which jsdom does not implement.

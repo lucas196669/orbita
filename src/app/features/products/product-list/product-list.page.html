@@ -1,0 +1,78 @@
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#productos-contenido">Saltar al contenido</a>
+
+  <main id="productos-contenido" class="page-shell stack">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Catálogo</p>
+        <h1>Productos</h1>
+        <p>Consulta, busca y ordena el inventario. La edición y el borrado se reservan al rol administrador.</p>
+      </div>
+
+      <div class="cluster">
+        <span class="user-chip">{{ vm.displayName() }}</span>
+        <button type="button" class="btn" (click)="exportCsv()" [disabled]="exporting()">Exportar CSV</button>
+        <button type="button" class="btn" (click)="exportPdf()" [disabled]="exporting()">
+          @if (exporting()) {
+          <span class="spinner spinner--sm" aria-hidden="true"></span>
+          Generando PDF… } @else { Exportar PDF }
+        </button>
+        @if (canCreate()) {
+        <a routerLink="/app/productos/nuevo" class="btn btn--primary">Nuevo producto</a>
+        }
+      </div>
+    </header>
+
+    @if (toast.message(); as message) {
+    <app-toast [message]="message" (dismissed)="toast.clear()" />
+    } @if (vm.error(); as error) {
+    <p class="empty-state" role="alert">{{ error }}</p>
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="vm.load()">Reintentar</button>
+    </div>
+    }
+
+    <app-data-table
+      [data]="vm.products()"
+      [columns]="vm.columns"
+      [loading]="vm.loading()"
+      [searchable]="true"
+      searchPlaceholder="Buscar por producto o categoría…"
+      [selectable]="true"
+      [rowActions]="vm.actions()"
+      caption="Productos del catálogo"
+      emptyMessage="Todavía no hay productos en el catálogo."
+      (actionTriggered)="onAction($event)"
+    >
+      <ng-template appTableCell="stock" let-row>
+        <span class="stock-value" [class.stock-value--low]="stockOf(row) < 5">{{ stockOf(row) }} uds.</span>
+      </ng-template>
+    </app-data-table>
+  </main>
+
+  <dialog
+    #confirmDialog
+    class="confirm-dialog"
+    aria-labelledby="delete-product-title"
+    aria-describedby="delete-product-description"
+    (close)="onDialogClose()"
+  >
+    <div class="confirm-dialog__panel card stack">
+      <h2 id="delete-product-title">Eliminar producto</h2>
+      <p id="delete-product-description">
+        ¿Seguro que quieres eliminar «{{ pendingDelete()?.name }}»? Esta acción no se puede deshacer.
+      </p>
+
+      @if (deleteError(); as error) {
+      <p class="form-summary" role="alert">{{ error }}</p>
+      }
+
+      <div class="cluster confirm-dialog__actions">
+        <button type="button" class="btn" (click)="cancelDelete()">Cancelar</button>
+        <button type="button" class="btn btn--danger" [disabled]="deleting()" (click)="confirmDelete()">
+          @if (deleting()) { Eliminando… } @else { Eliminar }
+        </button>
+      </div>
+    </div>
+  </dialog>
+</ion-content>

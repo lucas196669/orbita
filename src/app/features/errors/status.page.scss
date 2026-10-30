@@ -1,0 +1,63 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+.status {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: clamp(var(--space-6), 6vw, var(--space-12));
+  background:
+    radial-gradient(circle at 75% 15%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 45%),
+    var(--color-bg);
+}
+
+.status__card {
+  position: relative;
+  width: min(100%, 36rem);
+}
+
+.status__brand {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.status__code {
+  margin: 0;
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-4xl), 14vw, var(--text-5xl));
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-none);
+  opacity: 0.32;
+}
+
+.status h1 {
+  margin: 0;
+  max-width: 18ch;
+}
+
+.status__action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+}
+
+.status__action:hover {
+  background: var(--color-accent-strong);
+  color: var(--color-accent-contrast);
+}

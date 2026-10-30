@@ -74,6 +74,83 @@ src/app/
 - `core/services` se provee en raíz; los datos de Supabase y Firestore se
   encapsulan en servicios separados.
 
+## Rutas y control de acceso
+
+Todas las páginas se cargan con `loadComponent` (lazy loading) y
+`withComponentInputBinding()` / `withPreloading(PreloadAllModules)`.
+
+| Ruta | Página | Acceso |
+| --- | --- | --- |
+| `/login` | `features/auth/login` | Solo invitados (`guestGuard`) |
+| `/registro` | `features/auth/register` | Solo invitados (`guestGuard`) |
+| `/app` | `layout/shell` | Autenticado (`authGuard`) |
+| `/app/inicio` | `features/home` | Autenticado |
+| `/app/dashboard` | `features/dashboard` | Solo `admin` (`roleGuard`) |
+| `/app/productos` | `features/products/product-list` | Autenticado |
+| `/app/productos/nuevo` | `features/products/product-form` | Solo `admin` (`roleGuard`) |
+| `/app/productos/:id/editar` | `features/products/product-form` | Solo `admin` (`roleGuard`) |
+| `/app/pedidos` | `features/orders` | Autenticado |
+| `/app/ayuda` | `features/help` | Autenticado |
+| `/acceso-denegado` | `features/errors` (403) | Pública |
+| `''` | Redirección a `/app/inicio` | — |
+| `**` | `features/errors` (404) | Pública |
+
+- `authGuard`: sin sesión redirige a `/login` con `returnUrl`.
+- `roleGuard`: lee `route.data['roles']` y redirige a `/acceso-denegado` si el
+  rol no está permitido.
+- `guestGuard`: con sesión activa redirige a `/app/inicio`.
+- `AuthService` se inicializa con `provideAppInitializer` y lee el rol siempre
+  de la tabla `profiles`; nunca de `localStorage` ni del cliente.
+- `authInterceptor` añade `Authorization: Bearer <access_token>` a las
+  peticiones de Supabase y, ante un `401`, cierra sesión y vuelve a `/login`.
+
+## Formularios y validadores
+
+- `shared/components/form-field` (`app-form-field`) envuelve etiqueta, control
+  proyectado, ayuda, estado pendiente y errores con `aria-describedby`.
+- `shared/validators/unique-email.validator.ts`: debounce de 400 ms,
+  cancelación con `switchMap` y error `emailTaken`.
+- `shared/validators/unique-product-name.validator.ts`: igual que el anterior,
+  con error `nameTaken` e ignorando el nombre original en edición.
+- `shared/validators/password.validator.ts`: `passwordStrength` y
+  `matchFields('password', 'confirmPassword')`.
+- `shared/validators/product.validator.ts`: `maxTwoDecimals` e
+  `integerNumber`.
+- Los fallos de validación remota no bloquean el envío: se registran con
+  `validationNotice` y se muestran como aviso discreto.
+- Los formularios usan `FormBuilder.nonNullable`, signals para estado derivado
+  y `toSignal` para reaccionar a `statusChanges` y `valueChanges`.
+- El registro usa `updateOn: 'blur'` solo en el email y `supabase.auth.signUp`
+  con `options.data.full_name`; el rol siempre lo asigna el servidor.
+- `shared/components/toast` (`app-toast`) anuncia mensajes con
+  `role="status"` y `aria-live="polite"`.
+
+## Datos, dashboard y exportación
+
+- **Supabase** es la fuente relacional: `ProductsService` y `OrdersService`
+  encapsulan las consultas y mutaciones; la vista nunca habla con el cliente de
+  Supabase directamente.
+- **Firestore** es la fuente documental: `FirestoreActivityService` expone
+  `activity$()` en tiempo real, `log()` para registrar acciones y
+  `seedDemoData()` para generar actividad de demostración. Si Firebase no está
+  configurado, devuelve un flujo vacío y los errores de escritura se tratan como
+  avisos no bloqueantes.
+- `DashboardStore` es el viewmodel del dashboard: carga productos y pedidos en
+  paralelo con estados de carga/error independientes, mantiene filtros de rango
+  y categoría con signals y deriva métricas, series diarias, agregados y feed
+  con `computed()`.
+- Los gráficos usan Chart.js mediante `provideCharts()` en el propio componente
+  del dashboard, para que la librería no entre en el bundle inicial. La paleta
+  se lee de los tokens CSS con `readChartPalette()` y se actualiza al cambiar de
+  tema.
+- `shared/services/export.service.ts` centraliza la exportación. CSV usa BOM
+  UTF-8, separador `;`, coma decimal y neutraliza fórmulas; PDF usa `jsPDF` +
+  `jspdf-autotable` con carga dinámica, cabecera, filtros, paginación y pie. Se
+  reutiliza en dashboard, productos y pedidos.
+- La actividad registrada cubre inicio de sesión y altas, actualizaciones y
+  bajas de producto. Todavía no existe un flujo de alta de pedidos, por lo que
+  la acción `Pedido registrado` queda pendiente de conectar cuando se añada.
+
 ## Sistema de diseño
 
 Fuente de verdad: `src/theme/tokens.scss`. Documentación y ratios de contraste:
@@ -104,6 +181,14 @@ npm run test:e2e     # tests e2e (Playwright)
 npm run docs         # generar documentación Compodoc en documentation/
 ```
 
-Antes de cerrar una tarea: `npm run build` y `npm run lint` deben pasar.
+Antes de cerrar una tarea: `npm run build`, `npm run lint` y
+`npm run test:unit` deben pasar. Los tests unitarios usan Vitest y `fakeAsync`
+con una `ProxyZone` de `zone.js` cargada solo en la configuración `test` de
+`angular.json`; la aplicación sigue siendo zoneless.
+
 ## Regla estricta sobre los environment
-No modifiques ni sustituyas por marcadores los valores de supabaseUrl, supabaseKey ni del bloque firebase en src/environments/environment.ts y environment.prod.ts. Contienen claves públicas ya configuradas por el usuario. Nunca incluyas claves secretas (sb_secret_, service_role).
+
+No modifiques ni sustituyas por marcadores los valores de supabaseUrl,
+supabaseKey ni del bloque firebase en src/environments/environment.ts y
+environment.prod.ts. Contienen claves públicas ya configuradas por el usuario.
+Nunca incluyas claves secretas (sb_secret_, service_role).

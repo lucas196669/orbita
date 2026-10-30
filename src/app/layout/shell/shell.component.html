@@ -1,0 +1,108 @@
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<div class="shell">
+  <aside class="shell__rail" aria-label="Barra lateral de navegación">
+    <div class="shell__rail-inner">
+      <a class="shell__brand" routerLink="/app/inicio" aria-label="Orbita, ir al inicio">
+        <span class="shell__brand-mark" aria-hidden="true"></span>
+        <span class="shell__brand-name">Orbita</span>
+      </a>
+
+      <nav class="shell__nav" aria-label="Principal">
+        @for (item of vm.menu(); track item.path) {
+          <a
+            class="shell__nav-link"
+            [routerLink]="item.path"
+            routerLinkActive="shell__nav-link--active"
+            ariaCurrentWhenActive="page"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path [attr.d]="icons[item.icon]" />
+            </svg>
+            <span class="shell__nav-label">{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+
+      <div class="shell__rail-foot">
+        <div class="shell__user">
+          <span class="shell__avatar" aria-hidden="true">{{ vm.initials() }}</span>
+          <span class="shell__user-data">
+            <strong>{{ vm.displayName() }}</strong>
+            <span>{{ vm.roleLabel() }}</span>
+          </span>
+        </div>
+        <button class="shell__nav-link shell__logout" type="button" (click)="logout()">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M15 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4M10 17l-5-5 5-5M5 12h10" />
+          </svg>
+          <span class="shell__nav-label">Cerrar sesión</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="shell__workspace">
+    <header class="shell__topbar">
+      <div class="shell__topbar-title">
+        <span class="shell__mobile-brand">Orbita</span>
+        <span class="shell__context">{{ vm.roleLabel() }} · Espacio de trabajo</span>
+      </div>
+
+      <div class="cluster">
+        <button
+          class="shell__icon-button"
+          type="button"
+          [attr.aria-label]="isDark() ? 'Activar tema claro' : 'Activar tema oscuro'"
+          [attr.aria-pressed]="isDark()"
+          (click)="toggleTheme()"
+        >
+          @if (isDark()) {
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M18.4 5.6l1.4-1.4M4.2 19.8l1.4-1.4M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M21 13.2A8.4 8.4 0 1110.8 3a7 7 0 0010.2 10.2z" />
+            </svg>
+          }
+        </button>
+
+        <button
+          class="shell__icon-button shell__icon-button--mobile"
+          type="button"
+          aria-label="Cerrar sesión"
+          (click)="logout()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M15 4h4a2 2 0 012 2v12a2 2 0 01-2 2h-4M10 17l-5-5 5-5M5 12h10" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="contenido" class="shell__main" tabindex="-1">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <nav class="shell__bottom-nav" aria-label="Principal">
+    @for (item of vm.menu(); track item.path) {
+      <a
+        class="shell__bottom-link"
+        [routerLink]="item.path"
+        routerLinkActive="shell__bottom-link--active"
+        ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path [attr.d]="icons[item.icon]" />
+        </svg>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</div>

@@ -22,3 +22,200 @@
 @import '@ionic/angular/css/flex-utils.css';
 
 /* El sistema de diseño se carga después de Ionic desde angular.json */
+
+/* --------------------------------------------------------------------------
+ * Formularios y acciones
+ * -------------------------------------------------------------------------- */
+.page-shell {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+  padding-inline: clamp(var(--space-4), 5vw, var(--space-10));
+  padding-block: clamp(var(--space-8), 8vw, var(--space-16));
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.page-header__copy {
+  max-width: 42rem;
+}
+
+.page-header__copy p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.form-card {
+  width: min(100%, 46rem);
+  margin-inline: auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-4);
+}
+
+.form-grid--full {
+  grid-column: 1 / -1;
+}
+
+.form-control {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: inherit;
+  line-height: var(--leading-snug);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.form-control::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.form-control:hover {
+  border-color: var(--color-accent);
+}
+
+.form-control[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.form-control:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-block-start: var(--space-2);
+}
+
+.form-summary {
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: var(--weight-medium);
+}
+
+.form-summary:empty {
+  display: none;
+}
+
+.checkbox-field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-3);
+  align-items: start;
+}
+
+.checkbox-field input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-block-start: 0.2rem;
+  accent-color: var(--color-accent);
+}
+
+.checkbox-field label {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.field-error {
+  grid-column: 2;
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding-inline: var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn--primary {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.btn--primary:hover:not(:disabled) {
+  border-color: var(--color-accent-strong);
+  background: var(--color-accent-strong);
+  color: var(--color-accent-contrast);
+}
+
+.btn--ghost {
+  border-color: transparent;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 700ms linear infinite;
+}
+
+.spinner--sm {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 1.5px;
+}
+
+.loading-state,
+.empty-state {
+  padding: var(--space-8);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

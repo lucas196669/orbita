@@ -365,6 +365,146 @@ ion-fab-button::part(native):focus-visible {
   transform: translateY(0);
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field__label {
+  display: block;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.field__control {
+  width: 100%;
+  min-height: 3rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.field__control::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.field__control--invalid {
+  border-color: var(--color-danger);
+}
+
+.field__error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.page {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  padding: clamp(var(--space-6), 4vw, var(--space-10));
+}
+
+.page__header {
+  max-width: 46rem;
+  padding-block-end: var(--space-6);
+}
+
+.page__header h1 {
+  margin: 0;
+  max-width: 18ch;
+}
+
+.page__eyebrow {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.page__lede {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.page__card-title {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.skeleton {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-text) 8%, var(--color-surface-raised));
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-text) 10%, transparent),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton--title {
+  width: min(70%, 16rem);
+  height: 2rem;
+  border-radius: var(--radius-md);
+}
+
+.skeleton--line {
+  height: 0.9rem;
+}
+
+.skeleton--short {
+  width: 55%;
+}
+
+.skeleton--block {
+  min-height: 8rem;
+  border-radius: var(--radius-lg);
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+router-outlet + *,
+ion-router-outlet + * {
+  animation: orbita-route-in var(--transition-base) both;
+}
+
+@keyframes orbita-route-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-2));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* --------------------------------------------------------------------------
  * Movimiento reducido (WCAG 2.3.3)
  * -------------------------------------------------------------------------- */

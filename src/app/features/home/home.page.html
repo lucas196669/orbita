@@ -1,0 +1,38 @@
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#inicio-contenido">Saltar al contenido</a>
+
+  <main id="inicio-contenido" class="page-shell stack">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Inicio · {{ vm.roleLabel() }}</p>
+        <h1>Hola, {{ vm.displayName() }}</h1>
+        <p>{{ vm.greeting() }}</p>
+      </div>
+    </header>
+
+    @if (vm.error(); as error) {
+    <p class="empty-state" role="alert">{{ error }}</p>
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="vm.load()">Reintentar</button>
+    </div>
+    }
+
+    <section class="bento stats" aria-label="Resumen de tu espacio de trabajo">
+      @for (stat of vm.stats(); track stat.label) {
+      <app-stat-widget
+        [label]="stat.label"
+        [value]="stat.value"
+        [format]="stat.format"
+        [trend]="stat.trend"
+        [trendLabel]="stat.trendLabel"
+        [icon]="stat.icon"
+        [series]="stat.series"
+        [loading]="vm.loading()"
+        [accent]="stat.accent"
+        [interactive]="stat.link !== null"
+        (widgetClick)="open(stat)"
+      />
+      }
+    </section>
+  </main>
+</ion-content>

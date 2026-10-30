@@ -1,0 +1,49 @@
+<ion-content [fullscreen]="true">
+  <a class="skip-link" href="#pedidos-contenido">Saltar al contenido</a>
+
+  <main id="pedidos-contenido" class="page-shell stack">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Relacional · Todo el equipo</p>
+        <h1>Pedidos</h1>
+        <p>Sigue el estado de cada pedido, su producto y el importe facturado.</p>
+      </div>
+
+      <div class="cluster">
+        <span class="user-chip">{{ vm.displayName() }}</span>
+        <button type="button" class="btn" (click)="exportCsv()" [disabled]="exporting()">Exportar CSV</button>
+        <button type="button" class="btn" (click)="exportPdf()" [disabled]="exporting()">
+          @if (exporting()) {
+          <span class="spinner spinner--sm" aria-hidden="true"></span>
+          Generando PDF… } @else { Exportar PDF }
+        </button>
+      </div>
+    </header>
+
+    @if (toast.message(); as message) {
+    <app-toast [message]="message" (dismissed)="toast.clear()" />
+    } @if (vm.error(); as error) {
+    <p class="empty-state" role="alert">{{ error }}</p>
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="vm.load()">Reintentar</button>
+    </div>
+    }
+
+    <app-data-table
+      [data]="vm.orders()"
+      [columns]="vm.columns"
+      [loading]="vm.loading()"
+      [searchable]="true"
+      searchPlaceholder="Buscar por pedido, producto o estado…"
+      [selectable]="true"
+      caption="Pedidos registrados"
+      emptyMessage="Todavía no hay pedidos registrados."
+    >
+      <ng-template appTableCell="status" let-row>
+        <span class="status-badge" [class]="'status-badge status-badge--' + statusTone(row)">
+          {{ statusOf(row) }}
+        </span>
+      </ng-template>
+    </app-data-table>
+  </main>
+</ion-content>
