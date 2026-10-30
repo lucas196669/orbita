@@ -74,6 +74,40 @@ src/app/
 - `core/services` se provee en raíz; los datos de Supabase y Firestore se
   encapsulan en servicios separados.
 
+## Rutas de la fase 2
+
+| Ruta | Componente | Acceso |
+| --- | --- | --- |
+| `/login` | `LoginPage` | Invitados (`guestGuard`) |
+| `/registro` | `RegisterPage` | Invitados (`guestGuard`) |
+| `/app/productos` | `ProductListPage` | Autenticados (`authGuard`) |
+| `/app/productos/nuevo` | `ProductFormPage` | `admin` (`roleGuard`) |
+| `/app/productos/:id/editar` | `ProductFormPage` | `admin` (`roleGuard`) |
+
+`/app` y `/app/inicio` redirigen a `/app/productos`. El dashboard y la tabla
+avanzada llegarán en fases posteriores.
+
+## Formularios y validadores
+
+- `shared/components/form-field` (`app-form-field`) envuelve etiqueta, control
+  proyectado, ayuda, estado pendiente y errores con `aria-describedby`.
+- `shared/validators/unique-email.validator.ts`: debounce de 400 ms,
+  cancelación con `switchMap` y error `emailTaken`.
+- `shared/validators/unique-product-name.validator.ts`: igual que el anterior,
+  con error `nameTaken` e ignorando el nombre original en edición.
+- `shared/validators/password.validator.ts`: `passwordStrength` y
+  `matchFields('password', 'confirmPassword')`.
+- `shared/validators/product.validator.ts`: `maxTwoDecimals` e
+  `integerNumber`.
+- Los fallos de validación remota no bloquean el envío: se registran con
+  `validationNotice` y se muestran como aviso discreto.
+- Los formularios usan `FormBuilder.nonNullable`, signals para estado derivado
+  y `toSignal` para reaccionar a `statusChanges` y `valueChanges`.
+- El registro usa `updateOn: 'blur'` solo en el email y `supabase.auth.signUp`
+  con `options.data.full_name`; el rol siempre lo asigna el servidor.
+- `shared/components/toast` (`app-toast`) anuncia mensajes con
+  `role="status"` y `aria-live="polite"`.
+
 ## Sistema de diseño
 
 Fuente de verdad: `src/theme/tokens.scss`. Documentación y ratios de contraste:
@@ -104,4 +138,7 @@ npm run test:e2e     # tests e2e (Playwright)
 npm run docs         # generar documentación Compodoc en documentation/
 ```
 
-Antes de cerrar una tarea: `npm run build` y `npm run lint` deben pasar.
+Antes de cerrar una tarea: `npm run build`, `npm run lint` y
+`npm run test:unit` deben pasar. Los tests unitarios usan Vitest y `fakeAsync`
+con una `ProxyZone` de `zone.js` cargada solo en la configuración `test` de
+`angular.json`; la aplicación sigue siendo zoneless.
