@@ -109,8 +109,7 @@ export class LoginPage {
 
   private safeRedirect(): string {
     const target =
-      this.route.snapshot.queryParamMap.get('returnUrl') ??
-      this.route.snapshot.queryParamMap.get('redirectTo');
+      this.route.snapshot.queryParamMap.get('returnUrl') ?? this.route.snapshot.queryParamMap.get('redirectTo');
 
     return target?.startsWith('/app/') ? target : '/app/inicio';
   }
