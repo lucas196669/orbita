@@ -105,3 +105,5 @@ npm run docs         # generar documentación Compodoc en documentation/
 ```
 
 Antes de cerrar una tarea: `npm run build` y `npm run lint` deben pasar.
+## Regla estricta sobre los environment
+No modifiques ni sustituyas por marcadores los valores de supabaseUrl, supabaseKey ni del bloque firebase en src/environments/environment.ts y environment.prod.ts. Contienen claves públicas ya configuradas por el usuario. Nunca incluyas claves secretas (sb_secret_, service_role).
