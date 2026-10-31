@@ -1,7 +1,5 @@
 <ion-content [fullscreen]="true">
-  <a class="skip-link" href="#productos-contenido">Saltar al contenido</a>
-
-  <main id="productos-contenido" class="page-shell stack">
+  <div class="page-shell stack">
     <header class="page-header">
       <div class="page-header__copy stack">
         <p class="eyebrow">Catálogo</p>
@@ -48,7 +46,7 @@
         <span class="stock-value" [class.stock-value--low]="stockOf(row) < 5">{{ stockOf(row) }} uds.</span>
       </ng-template>
     </app-data-table>
-  </main>
+  </div>
 
   <dialog
     #confirmDialog

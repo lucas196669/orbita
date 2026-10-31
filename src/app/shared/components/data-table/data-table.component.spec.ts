@@ -182,6 +182,39 @@ describe('DataTableComponent', () => {
     fixture.destroy();
   });
 
+  it('hace las filas focusables y etiqueta la región desplazable', () => {
+    const fixture = createTable();
+    const region = fixture.nativeElement.querySelector('[role="region"]');
+    const row = visibleRows(fixture)[0];
+
+    expect(region?.getAttribute('aria-label')).toContain('Personas del equipo');
+    expect(row?.getAttribute('tabindex')).toBe('0');
+
+    row?.focus();
+    expect(document.activeElement).toBe(row);
+
+    fixture.destroy();
+  });
+
+  it('activa la fila con Enter y Espacio, pero no desde controles internos', () => {
+    const fixture = createTable({ rowActions: [{ id: 'edit', label: 'Editar' }] });
+    const selectedRows: Person[] = [];
+    fixture.componentInstance.rowSelected.subscribe((row) => selectedRows.push(row as Person));
+
+    const row = visibleRows(fixture)[0];
+    row?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    row?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+
+    expect(selectedRows.map((selected) => selected.id)).toEqual([1, 1]);
+
+    const action: HTMLButtonElement = fixture.nativeElement.querySelector('button.data-table__action');
+    action.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect(selectedRows).toHaveLength(2);
+
+    fixture.destroy();
+  });
+
   it(
     'shows the no-results state after filtering',
     fakeAsyncTest(() => {

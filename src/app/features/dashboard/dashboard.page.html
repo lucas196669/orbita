@@ -1,7 +1,5 @@
 <ion-content [fullscreen]="true">
-  <a class="skip-link" href="#dashboard-contenido">Saltar al contenido</a>
-
-  <main id="dashboard-contenido" class="page-shell stack dashboard">
+  <div class="page-shell stack dashboard">
     <header class="page-header">
       <div class="page-header__copy stack">
         <p class="eyebrow">Análisis · Solo administración</p>
@@ -431,13 +429,14 @@
       </ol>
       }
     </section>
-  </main>
+  </div>
 
   <dialog
     #seedDialog
     class="confirm-dialog"
     aria-labelledby="seed-dialog-title"
     aria-describedby="seed-dialog-description"
+    (close)="onSeedDialogClose()"
   >
     <div class="confirm-dialog__panel card stack">
       <h2 id="seed-dialog-title">Generar datos de ejemplo</h2>

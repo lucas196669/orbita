@@ -14,6 +14,7 @@ import { TableCellDirective } from '../../../shared/components/data-table/table-
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
 import type { ExportColumn } from '../../../shared/services/export.service';
 import { ExportService } from '../../../shared/services/export.service';
+import { captureDialogTrigger, restoreDialogFocus } from '../../../shared/utils/dialog-focus';
 import { describeDataError } from '../../../shared/utils/error-messages';
 
 import { ProductListStore } from './product-list.store';
@@ -64,6 +65,7 @@ export class ProductListPage {
   readonly canCreate = computed(() => this.vm.isAdmin());
 
   private readonly confirmDialog = viewChild<ElementRef<HTMLDialogElement>>('confirmDialog');
+  private dialogTrigger: HTMLElement | null = null;
 
   /** Exporta el catálogo completo a CSV. */
   exportCsv(): void {
@@ -132,6 +134,7 @@ export class ProductListPage {
   askDelete(product: Product): void {
     this.pendingDelete.set(product);
     this.deleteError.set(null);
+    this.dialogTrigger = captureDialogTrigger(this.document);
     this.confirmDialog()?.nativeElement.showModal();
   }
 
@@ -144,6 +147,8 @@ export class ProductListPage {
   onDialogClose(): void {
     this.pendingDelete.set(null);
     this.deleteError.set(null);
+    restoreDialogFocus(this.document, this.dialogTrigger);
+    this.dialogTrigger = null;
   }
 
   /** Confirma el borrado del producto pendiente. */

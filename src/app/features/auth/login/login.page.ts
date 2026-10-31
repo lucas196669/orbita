@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -6,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
+import { SkipLinkComponent } from '../../../shared/components/skip-link/skip-link.component';
 import { describeAuthError } from '../../../shared/utils/error-messages';
 import { controlErrorMessage, focusFirstInvalidControl } from '../../../shared/utils/form-errors';
 
@@ -14,7 +14,7 @@ import { controlErrorMessage, focusFirstInvalidControl } from '../../../shared/u
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  imports: [RouterLink, ReactiveFormsModule, FormFieldComponent],
+  imports: [RouterLink, ReactiveFormsModule, FormFieldComponent, SkipLinkComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {
@@ -22,7 +22,6 @@ export class LoginPage {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly document = inject(DOCUMENT);
 
   /** Formulario reactivo de acceso. */
   readonly form = this.fb.nonNullable.group({
@@ -73,11 +72,6 @@ export class LoginPage {
    */
   errorFor(name: string, label: string): string | null {
     return this.isInvalid(name) ? controlErrorMessage(this.form.get(name), label) : null;
-  }
-
-  /** Lleva el foco al primer campo del formulario (enlace "Saltar al formulario"). */
-  focusForm(): void {
-    this.document.getElementById('login-email')?.focus();
   }
 
   /** Inicia sesión si el formulario es válido. */

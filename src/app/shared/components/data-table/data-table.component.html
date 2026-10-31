@@ -28,7 +28,7 @@
     <p class="sr-only" role="status">Cargando datos…</p>
   }
 
-  <div #tableRegion class="data-table__scroll" tabindex="-1">
+  <div #tableRegion class="data-table__scroll" role="region" [attr.aria-label]="caption()" tabindex="-1">
     <table class="data-table__table" [id]="tableId" [attr.aria-busy]="loading()">
       <caption [id]="captionId" class="data-table__caption">
         {{
@@ -105,7 +105,9 @@
               class="data-table__row"
               [class.data-table__row--selected]="selectable() && isSelected(row)"
               [attr.aria-selected]="selectable() ? isSelected(row) : null"
+              tabindex="0"
               (click)="onRowClick(row, $event)"
+              (keydown)="onRowKeydown(row, $event)"
             >
               @if (selectable()) {
                 <td class="data-table__cell--center data-table__select-cell" data-label="Selección">

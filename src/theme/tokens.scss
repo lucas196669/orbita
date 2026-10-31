@@ -28,7 +28,7 @@
   --color-accent-rgb: 63, 86, 0;
   --color-accent-strong: #2f4100;
   --color-accent-fill: #b6e62e;
-  --color-accent-contrast: #10141c;
+  --color-accent-contrast: #ffffff;
   --color-border: #d3d9e3;
   --color-border-strong: #6b7688;
   --color-focus: #3f5600;
@@ -210,6 +210,7 @@ html {
 
 body {
   margin: 0;
+  overflow-x: clip;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
@@ -218,6 +219,13 @@ body {
   line-height: var(--leading-normal);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
 }
 
 ion-app {
@@ -353,54 +361,19 @@ ion-fab-button::part(native):focus-visible {
   z-index: 9999;
   transform: translateY(-200%);
   padding: var(--space-3) var(--space-4);
+  border: 0;
   border-radius: var(--radius-sm);
   background: var(--color-accent);
   color: var(--color-accent-contrast);
+  font: inherit;
   font-weight: var(--weight-semibold);
   text-decoration: none;
+  cursor: pointer;
   transition: transform var(--transition-fast);
 }
 
 .skip-link:focus-visible {
   transform: translateY(0);
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.field__label {
-  display: block;
-  color: var(--color-text);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-}
-
-.field__control {
-  width: 100%;
-  min-height: 3rem;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-}
-
-.field__control::placeholder {
-  color: var(--color-text-subtle);
-}
-
-.field__control--invalid {
-  border-color: var(--color-danger);
-}
-
-.field__error {
-  margin: 0;
-  color: var(--color-danger);
-  font-size: var(--text-sm);
 }
 
 .page {
@@ -453,12 +426,7 @@ ion-fab-button::part(native):focus-visible {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--color-text) 10%, transparent),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-text) 10%, transparent), transparent);
   transform: translateX(-100%);
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
@@ -516,5 +484,17 @@ ion-router-outlet + * {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Contraste reforzado (WCAG 1.4.6 / preferencia del sistema)
+ * -------------------------------------------------------------------------- */
+@media (prefers-contrast: more) {
+  :root {
+    --color-border: var(--color-border-strong);
+    --color-text-muted: var(--color-text);
+    --color-text-subtle: var(--color-text);
+    --focus-ring-width: 4px;
   }
 }

@@ -340,6 +340,25 @@ export class DataTableComponent<T extends object = Record<string, unknown>> {
   }
 
   /**
+   * Activa la fila con Enter o Espacio, igual que con el ratón.
+   *
+   * @param row Fila activada.
+   * @param event Evento de teclado.
+   */
+  onRowKeydown(row: T, event: KeyboardEvent): void {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    if (event.target instanceof Element && event.target.closest('button, a, input, label')) {
+      return;
+    }
+
+    event.preventDefault();
+    this.rowSelected.emit(row);
+  }
+
+  /**
    * Alterna la selección de una fila.
    *
    * @param row Fila que se alterna.

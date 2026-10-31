@@ -5,9 +5,12 @@ import type { Role } from '../models/user.model';
 import { AuthService } from '../services/auth.service';
 
 /** Exige que el rol actual esté incluido en `route.data.roles`. */
-export const roleGuard: CanActivateFn = (route) => {
+export const roleGuard: CanActivateFn = async (route) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+
+  await auth.ready();
+
   const allowedRoles = readRoles(route.data['roles']);
   const role = auth.role();
 

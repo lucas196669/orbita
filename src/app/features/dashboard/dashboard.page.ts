@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import type { ElementRef } from '@angular/core';
 import { IonContent } from '@ionic/angular';
@@ -11,6 +11,7 @@ import { StatWidgetComponent } from '../../shared/components/stat-widget/stat-wi
 import { ToastComponent } from '../../shared/components/toast/toast.component';
 import type { ExportColumn, ExportFilter } from '../../shared/services/export.service';
 import { ExportService } from '../../shared/services/export.service';
+import { captureDialogTrigger, restoreDialogFocus } from '../../shared/utils/dialog-focus';
 
 import { DASHBOARD_CHART_COMPONENTS } from './dashboard-charts';
 import { DashboardStore, type DashboardRange } from './dashboard.store';
@@ -46,6 +47,7 @@ const ORDER_EXPORT_COLUMNS: readonly ExportColumn<Order>[] = [
 export class DashboardPage {
   private readonly store = inject(DashboardStore);
   private readonly exportService = inject(ExportService);
+  private readonly document = inject(DOCUMENT);
 
   /** Servicio de avisos accesibles. */
   readonly toast = inject(ToastService);
@@ -71,6 +73,7 @@ export class DashboardPage {
   readonly seeding = signal(false);
 
   private readonly seedDialog = viewChild<ElementRef<HTMLDialogElement>>('seedDialog');
+  private dialogTrigger: HTMLElement | null = null;
 
   /**
    * Cambia el rango de fechas.
@@ -179,12 +182,19 @@ export class DashboardPage {
 
   /** Abre el diálogo de confirmación de datos de ejemplo. */
   openSeedDialog(): void {
+    this.dialogTrigger = captureDialogTrigger(this.document);
     this.seedDialog()?.nativeElement.showModal();
   }
 
   /** Cierra el diálogo de datos de ejemplo. */
   closeSeedDialog(): void {
     this.seedDialog()?.nativeElement.close();
+  }
+
+  /** Devuelve el foco al control que abrió el diálogo. */
+  onSeedDialogClose(): void {
+    restoreDialogFocus(this.document, this.dialogTrigger);
+    this.dialogTrigger = null;
   }
 
   /** Genera actividad de demostración en Firestore. */

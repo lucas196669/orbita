@@ -187,6 +187,7 @@ export class AuthService {
 
     try {
       const { data, error } = await this.supabase.auth.getSession();
+      console.log('AUTH bootstrap session', data.session, error);
       this.watchAuthChanges();
 
       if (error) {
@@ -236,6 +237,8 @@ export class AuthService {
       .select('role, full_name')
       .eq('id', session.user.id)
       .maybeSingle<ProfileRow>();
+
+    console.log('AUTH profile', data, error);
 
     if (error || !data) {
       return null;

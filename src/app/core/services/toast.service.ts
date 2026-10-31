@@ -15,7 +15,7 @@ export class ToastService {
    * @param message Texto a anunciar.
    * @param durationMs Duración visible en milisegundos.
    */
-  show(message: string, durationMs = 4000): void {
+  show(message: string, durationMs = 6000): void {
     this.clearTimer();
     this.messageState.set(message);
     this.timer = setTimeout(() => {
