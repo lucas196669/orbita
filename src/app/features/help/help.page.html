@@ -1,28 +1,58 @@
-<section class="page stack">
-  <header class="page__header stack">
-    <p class="page__eyebrow">Documentación · Todo el equipo</p>
-    <h1>{{ vm.title() }}</h1>
-    <p class="page__lede">{{ vm.description() }}</p>
+<section class="help" aria-labelledby="ayuda-titulo">
+  <header class="help__header">
+    <p class="eyebrow">Orbita · Ayuda</p>
+    <h1 id="ayuda-titulo" tabindex="-1">Centro de ayuda</h1>
+    <p class="lead">Guía rápida para usar Orbita: qué puedes hacer en cada sección y cómo hacerlo.</p>
   </header>
 
-  <section class="bento" aria-label="Secciones de ayuda en preparación">
-    @for (card of vm.cards(); track card.title) {
-    <article class="card stack" aria-busy="true">
-      <p class="page__eyebrow">{{ card.title }}</p>
-      <span class="skeleton skeleton--title" aria-hidden="true"></span>
-      <span class="skeleton skeleton--line" aria-hidden="true"></span>
-      <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
-      <p class="page__lede">{{ card.description }}</p>
+  <div class="help__grid">
+    @for (section of sections; track section.title) {
+    <article class="help__card">
+      <h2>
+        {{ section.title }}
+        @if (section.adminOnly) {
+        <span class="badge">Solo administrador</span>
+        }
+      </h2>
+      <ul>
+        @for (item of section.items; track item) {
+        <li>{{ item }}</li>
+        }
+      </ul>
     </article>
     }
+  </div>
+
+  <section class="help__block" aria-labelledby="atajos-titulo">
+    <h2 id="atajos-titulo">Atajos de teclado</h2>
+    <div class="table-wrap" role="region" aria-labelledby="atajos-titulo" tabindex="0">
+      <table>
+        <caption class="sr-only">Atajos de teclado disponibles en Orbita</caption>
+        <thead>
+          <tr>
+            <th scope="col">Tecla</th>
+            <th scope="col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (shortcut of shortcuts; track shortcut.keys) {
+          <tr>
+            <td><kbd>{{ shortcut.keys }}</kbd></td>
+            <td>{{ shortcut.action }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <section class="card stack" aria-labelledby="help-status">
-    <p class="page__eyebrow">Fase 1</p>
-    <h2 id="help-status" class="page__card-title">Centro de ayuda en preparación</h2>
-    <p class="page__lede">
-      Las guías se publicarán junto con los módulos reales para explicar cada flujo dentro de Orbita.
-    </p>
-    <div class="skeleton skeleton--block" aria-hidden="true"></div>
+  <section class="help__block" aria-labelledby="faq-titulo">
+    <h2 id="faq-titulo">Preguntas frecuentes</h2>
+    @for (faq of faqs; track faq.question) {
+    <details class="faq">
+      <summary>{{ faq.question }}</summary>
+      <p>{{ faq.answer }}</p>
+    </details>
+    }
   </section>
 </section>
