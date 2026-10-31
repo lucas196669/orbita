@@ -18,7 +18,7 @@ import { map, type Observable, of } from 'rxjs';
 import { DEMO_ACTIVITY_ACTIONS, type ActivityLog } from '../models/activity.model';
 
 /** Nombre de la colección documental de actividad. */
-export const ACTIVITY_COLLECTION = 'activity';
+export const ACTIVITY_COLLECTION = 'activity_logs';
 
 /** Documento tal y como llega de Firestore antes de normalizarlo. */
 interface ActivityDocument {
