@@ -1,7 +1,5 @@
 <ion-content [fullscreen]="true">
-  <a class="skip-link" href="#productos-contenido">Saltar al contenido</a>
-
-  <main id="productos-contenido" class="page-shell stack">
+  <div class="page-shell stack">
     <header class="page-header">
       <div class="page-header__copy stack">
         <p class="eyebrow">Catálogo</p>
@@ -11,6 +9,12 @@
 
       <div class="cluster">
         <span class="user-chip">{{ vm.displayName() }}</span>
+        <button type="button" class="btn" (click)="exportCsv()" [disabled]="exporting()">Exportar CSV</button>
+        <button type="button" class="btn" (click)="exportPdf()" [disabled]="exporting()">
+          @if (exporting()) {
+          <span class="spinner spinner--sm" aria-hidden="true"></span>
+          Generando PDF… } @else { Exportar PDF }
+        </button>
         @if (canCreate()) {
         <a routerLink="/app/productos/nuevo" class="btn btn--primary">Nuevo producto</a>
         }
@@ -42,7 +46,7 @@
         <span class="stock-value" [class.stock-value--low]="stockOf(row) < 5">{{ stockOf(row) }} uds.</span>
       </ng-template>
     </app-data-table>
-  </main>
+  </div>
 
   <dialog
     #confirmDialog

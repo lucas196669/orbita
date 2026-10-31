@@ -1,7 +1,7 @@
 :host {
   position: fixed;
   right: var(--space-4);
-  bottom: var(--space-4);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
   left: var(--space-4);
   z-index: 50;
   display: flex;
@@ -28,6 +28,8 @@
 }
 
 .toast__close {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   border: 0;
   background: transparent;
   color: var(--color-accent);

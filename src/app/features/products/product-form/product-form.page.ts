@@ -6,6 +6,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 
 import { PRODUCT_CATEGORIES, type ProductCategory, type ProductInput } from '../../../core/models/product.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { FirestoreActivityService } from '../../../core/services/firestore-activity.service';
 import { ProductsService } from '../../../core/services/products.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -31,6 +33,8 @@ export class ProductFormPage {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly toast = inject(ToastService);
+  private readonly auth = inject(AuthService);
+  private readonly activity = inject(FirestoreActivityService);
 
   private originalName = '';
 
@@ -175,6 +179,7 @@ export class ProductFormPage {
         this.toast.show('Producto creado correctamente.');
       }
 
+      await this.logActivity(id ? 'Producto actualizado' : 'Producto creado', input.name);
       await this.router.navigateByUrl('/app/productos');
     } catch (error) {
       this.serverError.set(describeDataError(error));
@@ -213,6 +218,14 @@ export class ProductFormPage {
       this.loadError.set(describeDataError(error));
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private async logActivity(action: string, productName: string): Promise<void> {
+    try {
+      await this.activity.log(action, this.auth.user()?.email ?? 'Usuario', productName);
+    } catch {
+      this.toast.show('El producto se guardó, pero no se pudo registrar la actividad.');
     }
   }
 

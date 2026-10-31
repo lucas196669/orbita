@@ -63,6 +63,32 @@ El sistema de diseño y los ratios de contraste se documentan en
 [`DESIGN.md`](DESIGN.md). Las convenciones de trabajo están en
 [`AGENTS.md`](AGENTS.md).
 
+## Datos y dashboard
+
+- **Supabase** guarda productos, pedidos y perfiles. `ProductsService` y
+  `OrdersService` aíslan las consultas y mutaciones del cliente.
+- **Firestore** almacena la colección documental `activity`. El dashboard la
+  escucha en tiempo real y permite generar 30 registros de demostración desde la
+  propia interfaz. Si Firebase no está configurado, la aplicación sigue
+  funcionando sin actividad.
+- El dashboard (`/app/dashboard`, solo `admin`) permite filtrar por rango de
+  fechas y categoría, muestra métricas, cuatro gráficos Chart.js y un feed de
+  actividad. Los datos se cargan en paralelo con estados de carga y error
+  independientes.
+- La actividad registra inicios de sesión y altas, actualizaciones y bajas de
+  producto. Las altas de pedidos aún no tienen flujo propio.
+
+## Exportación
+
+`shared/services/export.service.ts` genera CSV y PDF reutilizables:
+
+- **CSV**: BOM UTF-8, separador `;`, coma decimal y neutralización de fórmulas.
+- **PDF**: `jsPDF` + `jspdf-autotable` con carga dinámica, cabecera con filtros,
+  tabla paginada y pie con usuario y número de página.
+
+Está disponible en el dashboard, el catálogo de productos y el listado de
+pedidos.
+
 ## Credenciales de prueba
 
 <!-- Rellenar cuando existan usuarios y datos de demostración. -->
@@ -74,9 +100,16 @@ El sistema de diseño y los ratios de contraste se documentan en
 
 ## Manual de usuario
 
-<!-- Rellenar con el flujo de acceso, gestión de productos, pedidos y actividad. -->
+<!-- Rellenar con capturas y credenciales cuando existan usuarios de demostración. -->
 
-Pendiente de redacción.
+1. Inicia sesión en `/login` o crea una cuenta en `/registro`.
+2. Consulta el catálogo en `/app/productos`. Los usuarios `admin` pueden crear,
+   editar, eliminar y exportar productos.
+3. Revisa los pedidos en `/app/pedidos` y expórtalos a CSV o PDF.
+4. Si eres `admin`, abre `/app/dashboard` para consultar métricas, filtrar por
+   rango o categoría, generar actividad de demostración y exportar los pedidos
+   filtrados.
+5. Cambia entre tema claro y oscuro desde el shell.
 
 ## Despliegue
 

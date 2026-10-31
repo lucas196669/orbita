@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { ThemeService } from '../../core/services/theme.service';
+import { SkipLinkComponent } from '../../shared/components/skip-link/skip-link.component';
 
 import { SHELL_ICONS } from './shell.icons';
 import { ShellStore } from './shell.store';
@@ -11,7 +12,7 @@ import { ShellStore } from './shell.store';
   selector: 'app-shell',
   templateUrl: 'shell.component.html',
   styleUrls: ['shell.component.scss'],
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, SkipLinkComponent],
   providers: [ShellStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

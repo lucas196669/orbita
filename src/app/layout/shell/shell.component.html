@@ -1,4 +1,4 @@
-<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<app-skip-link targetId="contenido" label="Saltar al contenido" />
 
 <div class="shell">
   <aside class="shell__rail" aria-label="Barra lateral de navegación">
@@ -8,7 +8,7 @@
         <span class="shell__brand-name">Orbita</span>
       </a>
 
-      <nav class="shell__nav" aria-label="Principal">
+      <nav class="shell__nav" aria-label="Navegación principal">
         @for (item of vm.menu(); track item.path) {
           <a
             class="shell__nav-link"
@@ -89,7 +89,7 @@
     </main>
   </div>
 
-  <nav class="shell__bottom-nav" aria-label="Principal">
+  <nav class="shell__bottom-nav" aria-label="Navegación principal móvil">
     @for (item of vm.menu(); track item.path) {
       <a
         class="shell__bottom-link"

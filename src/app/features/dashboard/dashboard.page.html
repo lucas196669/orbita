@@ -1,29 +1,458 @@
-<section class="page stack">
-  <header class="page__header stack">
-    <p class="page__eyebrow">Análisis · Solo administración</p>
-    <h1>{{ vm.title() }}</h1>
-    <p class="page__lede">{{ vm.description() }}</p>
-  </header>
+<ion-content [fullscreen]="true">
+  <div class="page-shell stack dashboard">
+    <header class="page-header">
+      <div class="page-header__copy stack">
+        <p class="eyebrow">Análisis · Solo administración</p>
+        <h1>Dashboard</h1>
+        <p>
+          Ingresos, pedidos, inventario y actividad del equipo en una sola vista. Los datos relacionales vienen de
+          Supabase y la actividad se actualiza en directo desde Firestore.
+        </p>
+      </div>
 
-  <section class="bento" aria-label="Indicadores en preparación">
-    @for (card of vm.cards(); track card.title) {
-    <article class="card stack" aria-busy="true">
-      <p class="page__eyebrow">{{ card.title }}</p>
-      <span class="skeleton skeleton--title" aria-hidden="true"></span>
-      <span class="skeleton skeleton--line" aria-hidden="true"></span>
-      <span class="skeleton skeleton--line skeleton--short" aria-hidden="true"></span>
-      <p class="page__lede">{{ card.description }}</p>
-    </article>
+      <div class="cluster dashboard__actions">
+        <span class="user-chip">{{ vm.userName() }}</span>
+        <button type="button" class="btn" (click)="exportCsv()" [disabled]="exporting()">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3v12M7 10l5 5 5-5M4 19h16" />
+          </svg>
+          Exportar CSV
+        </button>
+        <button type="button" class="btn btn--primary" (click)="exportPdf()" [disabled]="exporting()">
+          @if (exporting()) {
+          <span class="spinner spinner--sm" aria-hidden="true"></span>
+          Generando PDF… } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h4" />
+          </svg>
+          Exportar PDF }
+        </button>
+      </div>
+    </header>
+
+    @if (toast.message(); as message) {
+    <app-toast [message]="message" (dismissed)="toast.clear()" />
     }
-  </section>
 
-  <section class="card stack" aria-labelledby="dashboard-status">
-    <p class="page__eyebrow">Fase 1</p>
-    <h2 id="dashboard-status" class="page__card-title">Módulo en preparación</h2>
-    <p class="page__lede">
-      La estructura y el control de acceso ya están listos. Los gráficos y las métricas se conectarán en una fase
-      posterior.
-    </p>
-    <div class="skeleton skeleton--block" aria-hidden="true"></div>
-  </section>
-</section>
+    <section class="card stack dashboard-filters" aria-labelledby="dashboard-filters-title">
+      <div class="dashboard-filters__head">
+        <h2 id="dashboard-filters-title">Filtros</h2>
+        @if (vm.isFiltering()) {
+        <button type="button" class="btn btn--ghost" (click)="vm.resetFilters()">Limpiar filtros</button>
+        }
+      </div>
+
+      <div class="dashboard-filters__row">
+        <div class="dashboard-filters__group" role="group" aria-label="Periodo de análisis">
+          @for (range of ranges; track range.value) {
+          <button
+            type="button"
+            class="filter-chip"
+            [class.filter-chip--active]="vm.range() === range.value"
+            [attr.aria-pressed]="vm.range() === range.value"
+            (click)="setRange(range.value)"
+          >
+            {{ range.label }}
+          </button>
+          }
+        </div>
+
+        <div class="dashboard-filters__field">
+          <label for="dashboard-category">Categoría</label>
+          <select
+            id="dashboard-category"
+            class="form-control"
+            [value]="vm.category()"
+            (change)="onCategoryChange($event)"
+          >
+            <option value="all">Todas las categorías</option>
+            @for (category of categories; track category) {
+            <option [value]="category">{{ category }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (vm.range() === 'custom') {
+      <div class="dashboard-filters__dates">
+        <div class="dashboard-filters__field">
+          <label for="dashboard-start">Desde</label>
+          <input
+            id="dashboard-start"
+            class="form-control"
+            type="date"
+            [value]="vm.customStart()"
+            [max]="vm.customEnd()"
+            (change)="onCustomStart($event)"
+          />
+        </div>
+        <div class="dashboard-filters__field">
+          <label for="dashboard-end">Hasta</label>
+          <input
+            id="dashboard-end"
+            class="form-control"
+            type="date"
+            [value]="vm.customEnd()"
+            [min]="vm.customStart()"
+            (change)="onCustomEnd($event)"
+          />
+        </div>
+      </div>
+      }
+
+      <p class="dashboard-filters__summary">
+        <span class="sr-only">Periodo activo: </span>{{ vm.rangeLabel() }} · {{ vm.categoryLabel() }}
+      </p>
+    </section>
+
+    @if (vm.productsError(); as error) {
+    <div class="card dashboard-alert" role="alert">
+      <div>
+        <strong>No se pudieron cargar los productos</strong>
+        <p>{{ error }}</p>
+      </div>
+      <button type="button" class="btn" (click)="vm.retryProducts()">Reintentar</button>
+    </div>
+    } @if (vm.ordersError(); as error) {
+    <div class="card dashboard-alert" role="alert">
+      <div>
+        <strong>No se pudieron cargar los pedidos</strong>
+        <p>{{ error }}</p>
+      </div>
+      <button type="button" class="btn" (click)="vm.retryOrders()">Reintentar</button>
+    </div>
+    }
+
+    <section class="stack" aria-labelledby="dashboard-metrics-title">
+      <h2 id="dashboard-metrics-title" class="sr-only">Indicadores principales</h2>
+      <div class="bento">
+        @for (metric of vm.metrics(); track metric.key) {
+        <app-stat-widget
+          [label]="metric.label"
+          [value]="metric.value"
+          [format]="metric.format"
+          [trend]="metric.trend"
+          [trendLabel]="metric.trendLabel"
+          [icon]="metric.icon"
+          [series]="metric.series"
+          [loading]="vm.loading()"
+          [accent]="metric.accent"
+        />
+        }
+      </div>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Gráficos del dashboard">
+      <figure class="card dashboard-chart dashboard-chart--wide" [attr.aria-busy]="vm.loading()">
+        <figcaption class="dashboard-chart__head">
+          <div>
+            <h2>Ingresos por día</h2>
+            <p>Evolución de la facturación en el periodo seleccionado.</p>
+          </div>
+          <span class="dashboard-chart__meta">{{ vm.rangeLabel() }}</span>
+        </figcaption>
+
+        @if (vm.loading()) {
+        <div class="skeleton skeleton--block" aria-hidden="true"></div>
+        <p class="sr-only" role="status">Cargando ingresos por día…</p>
+        } @else if (vm.ordersError(); as error) {
+        <div class="dashboard-chart__state" role="alert">
+          <p>{{ error }}</p>
+          <button type="button" class="btn" (click)="vm.retryOrders()">Reintentar</button>
+        </div>
+        } @else if (!vm.hasOrders()) {
+        <div class="dashboard-chart__state">
+          <p>Sin pedidos en el periodo seleccionado.</p>
+          @if (vm.isFiltering()) {
+          <button type="button" class="btn" (click)="vm.resetFilters()">Limpiar filtros</button>
+          }
+        </div>
+        } @else {
+        <div class="dashboard-chart__canvas">
+          <canvas
+            baseChart
+            type="line"
+            role="img"
+            aria-label="Gráfico de líneas con los ingresos y pedidos de cada día del periodo"
+            [data]="vm.revenueChartData()"
+            [options]="vm.revenueChartOptions()"
+          ></canvas>
+        </div>
+
+        <div class="sr-only">
+          <table>
+            <caption>
+              Ingresos y pedidos por día
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Pedidos</th>
+                <th scope="col">Ingresos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (point of vm.dailyData(); track point.time) {
+              <tr>
+                <th scope="row">{{ point.label }}</th>
+                <td>{{ point.orders }}</td>
+                <td>{{ point.revenue | currency: 'EUR' : 'symbol' : '1.2-2' }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </figure>
+
+      <figure class="card dashboard-chart" [attr.aria-busy]="vm.loading()">
+        <figcaption class="dashboard-chart__head">
+          <div>
+            <h2>Ingresos por categoría</h2>
+            <p>Pulsa una barra para filtrar el dashboard por esa categoría.</p>
+          </div>
+          <span class="dashboard-chart__meta">{{ vm.categoryLabel() }}</span>
+        </figcaption>
+
+        @if (vm.loading()) {
+        <div class="skeleton skeleton--block" aria-hidden="true"></div>
+        <p class="sr-only" role="status">Cargando ingresos por categoría…</p>
+        } @else if (vm.ordersError(); as error) {
+        <div class="dashboard-chart__state" role="alert">
+          <p>{{ error }}</p>
+          <button type="button" class="btn" (click)="vm.retryOrders()">Reintentar</button>
+        </div>
+        } @else if (!vm.hasOrders()) {
+        <div class="dashboard-chart__state">
+          <p>Sin pedidos en el periodo seleccionado.</p>
+          @if (vm.isFiltering()) {
+          <button type="button" class="btn" (click)="vm.resetFilters()">Limpiar filtros</button>
+          }
+        </div>
+        } @else {
+        <div class="dashboard-chart__canvas">
+          <canvas
+            baseChart
+            type="bar"
+            role="img"
+            aria-label="Gráfico de barras con los ingresos de cada categoría"
+            [data]="vm.categoryChartData()"
+            [options]="vm.categoryChartOptions()"
+            (chartClick)="onCategoryChartClick($event)"
+          ></canvas>
+        </div>
+
+        <div class="sr-only">
+          <table>
+            <caption>
+              Ingresos por categoría
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Categoría</th>
+                <th scope="col">Ingresos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of vm.revenueByCategory(); track entry.category) {
+              <tr>
+                <th scope="row">{{ entry.category }}</th>
+                <td>{{ entry.revenue | currency: 'EUR' : 'symbol' : '1.2-2' }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </figure>
+
+      <figure class="card dashboard-chart" [attr.aria-busy]="vm.activityLoading()">
+        <figcaption class="dashboard-chart__head">
+          <div>
+            <h2>Actividad por tipo</h2>
+            <p>Eventos registrados en Firestore durante el periodo.</p>
+          </div>
+          <span class="dashboard-chart__meta">{{ vm.activityByType().length }} tipos</span>
+        </figcaption>
+
+        @if (vm.activityLoading()) {
+        <div class="skeleton skeleton--block" aria-hidden="true"></div>
+        <p class="sr-only" role="status">Cargando actividad por tipo…</p>
+        } @else if (vm.activityError(); as error) {
+        <div class="dashboard-chart__state" role="alert">
+          <p>{{ error }}</p>
+          <button type="button" class="btn" (click)="vm.retryActivity()">Reintentar</button>
+        </div>
+        } @else if (vm.activityByType().length === 0) {
+        <div class="dashboard-chart__state">
+          <p>Sin actividad registrada en el periodo.</p>
+        </div>
+        } @else {
+        <div class="dashboard-chart__canvas">
+          <canvas
+            baseChart
+            type="doughnut"
+            role="img"
+            aria-label="Gráfico de anillos con el número de eventos de cada tipo de acción"
+            [data]="vm.activityChartData()"
+            [options]="vm.activityChartOptions()"
+          ></canvas>
+        </div>
+
+        <div class="sr-only">
+          <table>
+            <caption>
+              Actividad por tipo
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Acción</th>
+                <th scope="col">Eventos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of vm.activityByType(); track entry.action) {
+              <tr>
+                <th scope="row">{{ entry.action }}</th>
+                <td>{{ entry.count }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </figure>
+
+      <figure class="card dashboard-chart dashboard-chart--wide" [attr.aria-busy]="vm.loading()">
+        <figcaption class="dashboard-chart__head">
+          <div>
+            <h2>Top 5 productos</h2>
+            <p>Productos con más unidades vendidas en el periodo.</p>
+          </div>
+          <span class="dashboard-chart__meta">{{ vm.topProducts().length }} productos</span>
+        </figcaption>
+
+        @if (vm.loading()) {
+        <div class="skeleton skeleton--block" aria-hidden="true"></div>
+        <p class="sr-only" role="status">Cargando productos más vendidos…</p>
+        } @else if (vm.ordersError(); as error) {
+        <div class="dashboard-chart__state" role="alert">
+          <p>{{ error }}</p>
+          <button type="button" class="btn" (click)="vm.retryOrders()">Reintentar</button>
+        </div>
+        } @else if (vm.topProducts().length === 0) {
+        <div class="dashboard-chart__state">
+          <p>Sin ventas registradas en el periodo seleccionado.</p>
+          @if (vm.isFiltering()) {
+          <button type="button" class="btn" (click)="vm.resetFilters()">Limpiar filtros</button>
+          }
+        </div>
+        } @else {
+        <div class="dashboard-chart__canvas dashboard-chart__canvas--tall">
+          <canvas
+            baseChart
+            type="bar"
+            role="img"
+            aria-label="Gráfico de barras horizontales con los cinco productos más vendidos"
+            [data]="vm.topProductsChartData()"
+            [options]="vm.topProductsChartOptions()"
+          ></canvas>
+        </div>
+
+        <div class="sr-only">
+          <table>
+            <caption>
+              Productos más vendidos
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Producto</th>
+                <th scope="col">Unidades</th>
+                <th scope="col">Ingresos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (product of vm.topProducts(); track product.name) {
+              <tr>
+                <th scope="row">{{ product.name }}</th>
+                <td>{{ product.units }}</td>
+                <td>{{ product.revenue | currency: 'EUR' : 'symbol' : '1.2-2' }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </figure>
+    </section>
+
+    <section class="card stack dashboard-feed" aria-labelledby="dashboard-feed-title">
+      <div class="dashboard-feed__head">
+        <div>
+          <h2 id="dashboard-feed-title">Actividad reciente</h2>
+          <p>Últimos movimientos registrados por el equipo, en tiempo real.</p>
+        </div>
+        <button type="button" class="btn" (click)="openSeedDialog()">Generar datos de ejemplo</button>
+      </div>
+
+      @if (vm.activityLoading()) {
+      <div class="stack" aria-hidden="true">
+        <span class="skeleton skeleton--line"></span>
+        <span class="skeleton skeleton--line skeleton--short"></span>
+        <span class="skeleton skeleton--line"></span>
+      </div>
+      <p class="sr-only" role="status">Cargando actividad reciente…</p>
+      } @else if (vm.activityError(); as error) {
+      <div class="dashboard-chart__state" role="alert">
+        <p>{{ error }}</p>
+        <button type="button" class="btn" (click)="vm.retryActivity()">Reintentar</button>
+      </div>
+      } @else if (vm.activityFeed().length === 0) {
+      <p class="empty-state">Todavía no hay actividad en el periodo seleccionado.</p>
+      } @else {
+      <ol class="dashboard-feed__list" aria-label="Actividad reciente">
+        @for (entry of vm.activityFeed(); track entry.id) {
+        <li class="dashboard-feed__item">
+          <span class="dashboard-feed__dot" aria-hidden="true"></span>
+          <div class="dashboard-feed__body">
+            <p class="dashboard-feed__action">{{ entry.action }}</p>
+            <p class="dashboard-feed__actor">{{ entry.actor }}</p>
+            @if (entry.detail) {
+            <p class="dashboard-feed__detail">{{ entry.detail }}</p>
+            }
+            <time class="dashboard-feed__time" [attr.datetime]="entry.createdAt.toISOString()">
+              {{ formatActivityDate(entry.createdAt) }}
+            </time>
+          </div>
+        </li>
+        }
+      </ol>
+      }
+    </section>
+  </div>
+
+  <dialog
+    #seedDialog
+    class="confirm-dialog"
+    aria-labelledby="seed-dialog-title"
+    aria-describedby="seed-dialog-description"
+    (close)="onSeedDialogClose()"
+  >
+    <div class="confirm-dialog__panel card stack">
+      <h2 id="seed-dialog-title">Generar datos de ejemplo</h2>
+      <p id="seed-dialog-description">
+        Se añadirán 30 registros de actividad de demostración repartidos por los últimos 30 días. No se duplicarán
+        documentos si ya existen.
+      </p>
+
+      <div class="cluster confirm-dialog__actions">
+        <button type="button" class="btn" (click)="closeSeedDialog()">Cancelar</button>
+        <button type="button" class="btn btn--primary" [disabled]="seeding()" (click)="confirmSeed()">
+          @if (seeding()) {
+          <span class="spinner spinner--sm" aria-hidden="true"></span>
+          Generando… } @else { Generar }
+        </button>
+      </div>
+    </div>
+  </dialog>
+</ion-content>

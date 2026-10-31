@@ -8,6 +8,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
+import { SkipLinkComponent } from '../../../shared/components/skip-link/skip-link.component';
 import { describeAuthError } from '../../../shared/utils/error-messages';
 import { controlErrorMessage, focusFirstInvalidControl } from '../../../shared/utils/form-errors';
 import { hasValidationNotice } from '../../../shared/validators/validation-notice';
@@ -19,7 +20,7 @@ import { createRegisterForm } from './register-form';
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
-  imports: [IonContent, RouterLink, ReactiveFormsModule, FormFieldComponent],
+  imports: [IonContent, RouterLink, ReactiveFormsModule, FormFieldComponent, SkipLinkComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterPage {
