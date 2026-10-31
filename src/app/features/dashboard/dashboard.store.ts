@@ -730,7 +730,7 @@ export class DashboardStore {
     );
   }
 
-  private connectActivity(): void {
+   private connectActivity(): void {
     this.activityLoadingState.set(true);
     this.activityErrorState.set(null);
 
@@ -741,10 +741,12 @@ export class DashboardStore {
           this.activityErrorState.set(describeDataError(error));
           return of([] as readonly ActivityLog[]);
         }),
-        finalize(() => this.activityLoadingState.set(false)),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((entries) => this.activityState.set(entries));
+      .subscribe((entries) => {
+        this.activityState.set(entries);
+        this.activityLoadingState.set(false);
+      });
   }
 
   private tooltipOptions(): Partial<TooltipOptions> {
